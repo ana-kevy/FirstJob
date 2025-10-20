@@ -6,7 +6,8 @@ class UsuarioAdaptado(AbstractUser):
     endereco = models.CharField(max_length=255, blank=True, null=True)
     curriculo = models.FileField(upload_to='curriculos/', blank=True, null=True)
     habilidades = models.TextField(blank=True, null=True)
-    linkportfolio = models.CharField(blank=True, null=True)
+    link_portfolio = models.CharField(blank=True, null=True)
+    tipo_usuario = models.CharField(max_length=20, choices=[('candidato', 'Candidato'), ('empresa', 'Empresa')], default='candidato')
     is_admin = models.BooleanField(default=False)
     is_empresa = models.BooleanField(default=False)
 
