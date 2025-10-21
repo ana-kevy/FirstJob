@@ -7,15 +7,26 @@ from .forms import UsuarioAdaptadoForm, LoginForm
 
 # ========= CADASTRO =========
 def cadastrar_usuario(request):
-    """Cadastro normal de usuário (empresa ou candidato)"""
+    """Cadastro de usuário (empresa ou candidato)"""
     if request.method == 'POST':
         form = UsuarioAdaptadoForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+
+            # Define flags automáticas conforme o tipo de usuário
+            if user.tipo_usuario == 'empresa':
+                user.is_empresa = True
+                user.is_admin = False
+            else:
+                user.is_empresa = False
+                user.is_admin = False
+
+            user.save()
             messages.success(request, f'Cadastro de {user.username} realizado com sucesso!')
             return redirect('usuarios:login')
     else:
         form = UsuarioAdaptadoForm()
+
     return render(request, 'usuarios/cadastrar.html', {'form': form})
 
 # ========= LOGIN / LOGOUT =========
@@ -39,7 +50,7 @@ def login_view(request):
                 elif user.is_candidato:
                     return redirect('listar_vagas')
                 elif user.is_admin:
-                    return redirect('listar_usuarios')
+                    return redirect('listar_usuarios') # reveer esse trecho aqui, se vai ser so admin ou is_canidato
 
                 return redirect('listar_vagas')
         else:
