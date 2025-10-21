@@ -14,7 +14,7 @@ def listar_vagas(request):
     paginator = Paginator(vagas, 6)  # 6 vagas por página
     page = request.GET.get('page')
     vagas_paginadas = paginator.get_page(page)
-    return render(request, 'vagas/listar.html', {'vagas': vagas_paginadas})
+    return render(request, 'listar_vagas.html', {'vagas': vagas_paginadas})
 
 
 # ========= DETALHE =========

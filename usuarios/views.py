@@ -39,16 +39,18 @@ def login_view(request):
                 elif user.is_candidato:
                     return redirect('listar_vagas')
                 elif user.is_admin:
-                    return redirect('usuarios:listar_usuarios')
+                    return redirect('listar_usuarios')
 
                 return redirect('listar_vagas')
         else:
             messages.error(request, 'Usuário ou senha inválidos.')
     else:
         form = LoginForm()
-    return render(request, 'usuarios/login.html', {'form': form})
+    return render(request, 'login.html', {'form': form})
 
 def logout_view(request):
     auth_logout(request)
     messages.info(request, 'Você saiu do sistema.')
     return redirect('usuarios:login')
+
+

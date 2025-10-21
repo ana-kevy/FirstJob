@@ -25,7 +25,7 @@ class UsuarioAdaptadoAdmin(UserAdmin):
     add_fieldsets = UserAdmin.add_fieldsets + (
         ('Informações adicionais', {
             'fields': (
-                'cpf', 'endereco', 'curriculo', 'habilidades', 'linkportfolio', 'is_empresa', 'is_admin'
+                'cpf', 'endereco', 'curriculo', 'habilidades', 'link_portfolio', 'is_empresa', 'is_admin'
             ),
         }),
     )
