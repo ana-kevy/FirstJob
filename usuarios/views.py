@@ -57,7 +57,7 @@ def login_view(request):
             messages.error(request, 'Usuário ou senha inválidos.')
     else:
         form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'usuarios/login.html', {'form': form})
 
 def logout_view(request):
     auth_logout(request)
