@@ -32,7 +32,7 @@ def cadastrar_usuario(request):
 # ========= LOGIN / LOGOUT =========
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('listar_vagas')
+        return redirect('vagas:listar_vagas')
 
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
@@ -48,11 +48,11 @@ def login_view(request):
                 if user.is_empresa:
                     return redirect('painel_empresa')
                 elif user.is_candidato:
-                    return redirect('listar_vagas')
+                    return redirect('vagas:listar_vagas')
                 elif user.is_admin:
-                    return redirect('listar_usuarios') # reveer esse trecho aqui, se vai ser so admin ou is_canidato
+                    return redirect('') # reveer esse trecho aqui, se vai ser so admin ou is_canidato
 
-                return redirect('listar_vagas')
+                return redirect('vagas:listar_vagas')
         else:
             messages.error(request, 'Usuário ou senha inválidos.')
     else:
