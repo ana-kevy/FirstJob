@@ -30,7 +30,6 @@ class EmpresaCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, "Empresa cadastrada com sucesso!")
         return super().form_valid(form)
 
-
 # Editar empresa
 class EmpresaUpdateView(LoginRequiredMixin, UpdateView):
     model = Empresa

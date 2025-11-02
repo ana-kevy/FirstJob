@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 
 class Empresa(models.Model):
-    usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='empresa')
     nome = models.CharField(max_length=100)
     cnpj = models.CharField(max_length=18, unique=True)
     endereco = models.CharField(max_length=255, blank=True, null=True)
