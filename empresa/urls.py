@@ -4,8 +4,9 @@ from . import views
 app_name = 'empresa'
 
 urlpatterns = [
-    path('', views.listar_empresas, name='listar_empresas'),
-    path('nova/', views.criar_empresa, name='criar_empresa'),
-    path('<int:pk>/editar/', views.editar_empresa, name='editar_empresa'),
-    path('<int:pk>/excluir/', views.excluir_empresa, name='excluir_empresa'),
+    path('', views.EmpresaListView.as_view(), name='listar_empresas'),
+    path('<int:pk>/', views.EmpresaDetailView.as_view(), name='detalhe_empresa'),
+    path('nova/', views.EmpresaCreateView.as_view(), name='criar_empresa'),
+    path('<int:pk>/editar/', views.EmpresaUpdateView.as_view(), name='editar_empresa'),
+    path('<int:pk>/excluir/', views.EmpresaDeleteView.as_view(), name='excluir_empresa'),
 ]
