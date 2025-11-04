@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include 
+from usuarios.views import painel_candidato, painel_empresa 
 
 
 urlpatterns = [
@@ -23,6 +24,7 @@ urlpatterns = [
     path('usuarios/', include('usuarios.urls')),
     path('empresa/', include('empresa.urls')),
     path('vagas/', include('vagas.urls')),
+   
 
 ]
 

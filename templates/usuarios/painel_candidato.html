@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Painel do Candidato</h2>
+    <p>Bem-vindo(a), {{ request.user.username }}!</p>
+
+    <div class="list-group mt-4">
+
+        <a href="{% url 'vagas:listar_vagas' %}" class="list-group-item list-group-item-action">
+             Ver vagas disponíveis
+        </a>
+
+        <a href="#" class="list-group-item list-group-item-action">
+             Currículo e Portfólio (em preparo)
+        </a>
+
+    </div>
+</div>
+
+{% endblock %}

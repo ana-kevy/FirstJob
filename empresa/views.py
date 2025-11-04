@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
@@ -24,11 +25,21 @@ class EmpresaCreateView(LoginRequiredMixin, CreateView):
     model = Empresa
     form_class = EmpresaForm
     template_name = 'empresa/form.html'
-    success_url = reverse_lazy('empresa:listar_empresas')
+    success_url = reverse_lazy('empresa:painel_empresa')
+
+    def dispatch(self, request, *args, **kwargs):
+        # se já existir empresa, não deixa criar outra
+        if hasattr(request.user, 'empresa'):
+            messages.warning(request, 'Você já possui uma empresa cadastrada.')
+            return redirect('empresa:painel_empresa')
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
+        empresa = form.save(commit=False)
+        empresa.usuario = self.request.user  # <- vincula ao usuário logado aqui
+        empresa.save()
         messages.success(self.request, "Empresa cadastrada com sucesso!")
-        return super().form_valid(form)
+        return redirect(self.success_url)
 
 # Editar empresa
 class EmpresaUpdateView(LoginRequiredMixin, UpdateView):

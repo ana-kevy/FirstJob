@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class UsuarioAdaptado(AbstractUser):
-    cpf = models.CharField(max_length=14, unique=True, null=True, blank=True)
+    cpf = models.CharField(max_length=14, blank=True, null=True)
     endereco = models.CharField(max_length=255, blank=True, null=True)
     curriculo = models.FileField(upload_to='curriculos/', blank=True, null=True)
     habilidades = models.TextField(blank=True, null=True)

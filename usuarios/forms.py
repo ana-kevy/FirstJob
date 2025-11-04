@@ -26,6 +26,18 @@ class UsuarioAdaptadoForm(UserCreationForm):
             'link_portfolio': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Link do seu portfólio'}),
         }
 
+    # >>>>> AQUI ADICIONEI
+    def clean_cpf(self):
+        cpf = self.cleaned_data.get('cpf')
+
+        if cpf:
+            # verifica no banco se existe já um igual
+            if UsuarioAdaptado.objects.filter(cpf=cpf).exists():
+                raise forms.ValidationError('CPF já cadastrado no sistema.')
+        
+        return cpf
+    # <<<<<<
+
     def save(self, commit=True):
         user = super().save(commit=False)
         tipo = self.cleaned_data['tipo_usuario']
