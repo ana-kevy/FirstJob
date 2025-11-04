@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Vagas Disponíveis</h2>
+
+<a href="{% url 'vagas:criar_vaga' %}" class="btn btn-primary mb-3">+ Criar nova vaga</a>
+
+<ul>
+{% for vaga in vagas %}
+    <li>
+        <a href="{% url 'vagas:detalhar_vaga' vaga.id %}">
+            {{ vaga.titulo }}
+        </a>
+    </li>
+{% empty %}
+    <p>Não há vagas cadastradas ainda.</p>
+{% endfor %}
+</ul>
+
+{% endblock %}

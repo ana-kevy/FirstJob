@@ -303,9 +303,17 @@
             <a class="nav-link active" href="{% url 'vagas:listar_vagas' %}">
                 <i class="bi bi-house-door"></i> Início
             </a>
-            <a class="nav-link" href="#">
-                <i class="bi bi-plus-circle"></i> Nova Vaga
-            </a>
+
+            {% if request.user.empresa %}
+                <a class="nav-link" href="{% url 'vagas:criar_vaga' %}">
+                    <i class="bi bi-plus-circle"></i> Nova Vaga
+                </a>
+            {% else %}
+                <a class="nav-link" href="{% url 'empresa:criar_empresa' %}">
+                    <i class="bi bi-plus-circle"></i> Nova Vaga
+                </a>
+            {% endif %}
+
             <a class="nav-link" href="#">
                 <i class="bi bi-search"></i> Buscar Vagas
             </a>

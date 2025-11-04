@@ -4,6 +4,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import UsuarioAdaptado
 from .forms import UsuarioAdaptadoForm, LoginForm
+from django.contrib.auth.models import Group
+from django.http import HttpResponse
+
+
+def criar_grupos(request):
+    Group.objects.get_or_create(name='EMPRESA')
+    Group.objects.get_or_create(name='USUARIO')
+    return HttpResponse("Grupos criados")
 
 # ========= CADASTRO =========
 def cadastrar_usuario(request):
@@ -24,6 +32,13 @@ def cadastrar_usuario(request):
                 user.is_admin = False
 
             user.save()
+
+            if user.tipo_usuario == 'empresa':
+                grupo, _ = Group.objects.get_or_create(name='EMPRESA')
+            else:
+                grupo, _ = Group.objects.get_or_create(name='USUARIO')
+            grupo.user_set.add(user)
+
             messages.success(request, f'Cadastro de {user.username} realizado com sucesso!')
             return redirect('usuarios:login')
     else:

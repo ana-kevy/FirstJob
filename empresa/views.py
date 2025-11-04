@@ -25,18 +25,18 @@ class EmpresaCreateView(LoginRequiredMixin, CreateView):
     model = Empresa
     form_class = EmpresaForm
     template_name = 'empresa/form.html'
-    success_url = reverse_lazy('empresa:painel_empresa')
+    success_url = reverse_lazy('empresa:listar_empresas')
 
     def dispatch(self, request, *args, **kwargs):
         # se já existir empresa, não deixa criar outra
         if hasattr(request.user, 'empresa'):
             messages.warning(request, 'Você já possui uma empresa cadastrada.')
-            return redirect('empresa:painel_empresa')
+            return redirect('empresa:listar_empresas')
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         empresa = form.save(commit=False)
-        empresa.usuario = self.request.user  # <- vincula ao usuário logado aqui
+        empresa.usuario = self.request.user
         empresa.save()
         messages.success(self.request, "Empresa cadastrada com sucesso!")
         return redirect(self.success_url)

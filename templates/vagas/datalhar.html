@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{ vaga.titulo }}</h2>
+
+<p><strong>Descrição:</strong> {{ vaga.descricao }}</p>
+<p><strong>Requisitos:</strong> {{ vaga.requisitos }}</p>
+<p><strong>Salário:</strong> {{ vaga.salario }}</p>
+<p><strong>Carga horária:</strong> {{ vaga.carga_horaria }}</p>
+
+<hr>
+<h3>Enviar mensagem para a empresa</h3>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Enviar</button>
+</form>
+
+<hr>
+<h3>Mensagens:</h3>
+
+<ul>
+    {% for mensagem in mensagens %}
+        <li><b>{{ mensagem.candidato.username }}</b>: {{ mensagem.conteudo }}</li>
+    {% empty %}
+        <p>Nenhuma mensagem ainda.</p>
+    {% endfor %}
+</ul>
+
+{% endblock %}

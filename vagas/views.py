@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from .models import Vaga, Mensagem
+from .models import Vaga, Mensagem, Candidatura
 from .form import VagaForm, MensagemForm
 from empresa.models import Empresa
+from django.contrib.auth.decorators import user_passes_test
 
 
 # ========= LISTAGEM =========
@@ -43,23 +44,41 @@ def detalhar_vaga(request, vaga_id):
 
 
 # ========= CRUD DE VAGAS (EMPRESA) =========
-@login_required
+def grupo_required(nome_grupo):
+    def check(user):
+        return user.is_authenticated and user.groups.filter(name=nome_grupo).exists()
+    return user_passes_test(check)
+
+@grupo_required('EMPRESA')
 def criar_vaga(request):
-    """Apenas empresas podem criar vagas"""
-    if not hasattr(request.user, 'empresa'):
-        messages.error(request, 'Somente empresas podem cadastrar vagas.')
+    # só empresas podem criar vagas
+    if not request.user.groups.filter(name='EMPRESA').exists():
+        messages.error(request, 'Somente contas do tipo empresa podem cadastrar vagas.')
         return redirect('vagas:listar_vagas')
 
     if request.method == 'POST':
         form = VagaForm(request.POST)
+        # se user é empresa, ignorar o campo 'empresa' enviado e setar do usuário
         if form.is_valid():
             vaga = form.save(commit=False)
-            vaga.empresa = request.user.empresa
+            # setar empresa automaticamente
+            if hasattr(request.user, 'empresa'):
+                vaga.empresa = request.user.empresa
+            else:
+                messages.error(request, 'Sua conta de empresa não está vinculada corretamente.')
+                return redirect('empresa:criar_empresa')
             vaga.save()
             messages.success(request, 'Vaga criada com sucesso!')
             return redirect('vagas:listar_vagas')
     else:
         form = VagaForm()
+        # esconder o campo empresa no form (opcional visual)
+        if hasattr(request.user, 'empresa'):
+            # tornar o campo hidden para não confundir usuário empresa
+            form.fields['empresa'].widget = forms.HiddenInput()
+            form.fields['empresa'].required = False
+            form.initial['empresa'] = request.user.empresa.pk
+
     return render(request, 'vagas/criar.html', {'form': form})
 
 
@@ -84,3 +103,15 @@ def excluir_vaga(request, vaga_id):
     messages.success(request, 'Vaga excluída com sucesso!')
     return redirect('vagas:listar_vagas')
 
+@login_required
+def candidatar(request, vaga_id):
+    vaga = get_object_or_404(Vaga, id=vaga_id)
+
+    # evita se candidatar duas vezes
+    if Candidatura.objects.filter(usuario=request.user, vaga=vaga).exists():
+        messages.warning(request, "Você já se candidatou nessa vaga.")
+        return redirect('vagas:detalhar_vaga', vaga_id=vaga.id)
+
+    Candidatura.objects.create(usuario=request.user, vaga=vaga)
+    messages.success(request, "Candidatura realizada com sucesso!")
+    return redirect('vagas:detalhar_vaga', vaga_id=vaga.id)

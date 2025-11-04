@@ -5,15 +5,17 @@ from .models import Vaga, Mensagem
 class VagaForm(forms.ModelForm):
     class Meta:
         model = Vaga
-        fields = ['titulo', 'descricao', 'requisitos', 'salario', 'carga_horaria', 'ativo']
+        fields = ['empresa', 'titulo', 'descricao', 'requisitos', 'salario', 'carga_horaria', 'ativo']
         widgets = {
-            'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título da vaga'}),
-            'descricao': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Descrição da vaga'}),
-            'requisitos': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Requisitos necessários'}),
-            'salario': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ex: 2500.00'}),
-            'carga_horaria': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: 40h semanais'}),
+            'empresa': forms.Select(attrs={'class': 'form-control'}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'descricao': forms.Textarea(attrs={'class': 'form-control'}),
+            'requisitos': forms.Textarea(attrs={'class': 'form-control'}),
+            'salario': forms.NumberInput(attrs={'class': 'form-control'}),
+            'carga_horaria': forms.TextInput(attrs={'class': 'form-control'}),
             'ativo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
 
 
 class MensagemForm(forms.ModelForm):
