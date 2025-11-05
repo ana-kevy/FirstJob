@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+
+    <h1>Bem-vindo ao Sistema de Vagas</h1>
+    <p class="lead">Plataforma para conexão entre candidatos e empresas.</p>
+
+    <hr>
+
+    <div class="mt-4">
+        <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-primary btn-lg">
+            Ver Vagas Disponíveis
+        </a>
+    </div>
+
+    {% if request.user.is_authenticated %}
+        <p class="mt-4">
+            Olá, <strong>{{ request.user.first_name|default:request.user.username }}</strong>
+        </p>
+    {% else %}
+        <div class="mt-5">
+            <a href="{% url 'login' %}" class="btn btn-success btn-lg me-3">Entrar</a>
+            <a href="{% url 'registrar' %}" class="btn btn-outline-dark btn-lg">Criar Conta</a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

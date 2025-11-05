@@ -9,6 +9,8 @@ class UsuarioAdaptado(AbstractUser):
     link_portfolio = models.CharField(max_length=255, blank=True, null=True)
     tipo_usuario = models.CharField(max_length=20, choices=[('candidato', 'Candidato'), ('empresa', 'Empresa')], default='candidato')
     is_admin = models.BooleanField(default=False)
+    is_empresa = models.BooleanField(default=False)
+    is_candidato = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.username} - {self.cpf if self.cpf else 'sem CPF'}"

@@ -9,4 +9,6 @@ urlpatterns = [
     path('criar/', views.criar_vaga, name='criar_vaga'),
     path('<int:vaga_id>/editar/', views.editar_vaga, name='editar_vaga'),
     path('<int:vaga_id>/excluir/', views.excluir_vaga, name='excluir_vaga'),
+    path('<int:vaga_id>/candidatar/', views.candidatar, name='candidatar'),
+
 ]
