@@ -1,10 +1,11 @@
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from .models import Empresa
 from .forms import EmpresaForm
+from django.contrib.auth.models import Group
 
 # Lista de empresas
 class EmpresaListView(LoginRequiredMixin, ListView):
@@ -41,6 +42,21 @@ class EmpresaCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, "Empresa cadastrada com sucesso!")
         return redirect(self.success_url)
 
+def cadastrar_empresa(request):
+    """Cadastro de empresa"""
+    if request.method == 'POST':
+        form = EmpresaForm(request.POST)
+        if form.is_valid():
+            empresa = form.save()
+
+            messages.success(request, f'Empresa {empresa.nome} cadastrada com sucesso!')
+            return redirect('usuarios:login')
+    else:
+        form = EmpresaForm()
+
+    return render(request, 'empresa/cadastrar.html', {'form': form})
+
+
 # Editar empresa
 class EmpresaUpdateView(LoginRequiredMixin, UpdateView):
     model = Empresa
@@ -62,3 +78,4 @@ class EmpresaDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Empresa excluída com sucesso!")
         return super().delete(request, *args, **kwargs)
+

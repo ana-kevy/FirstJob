@@ -1,14 +1,23 @@
-from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-class Empresa(models.Model):
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+class Empresa(AbstractUser): 
     nome = models.CharField(max_length=100)
-    cnpj = models.CharField(max_length=18, unique=True, null=True, blank=True)
+    cnpj = models.CharField(max_length=18, unique=True)
     endereco = models.CharField(max_length=255, blank=True, null=True)
     telefone = models.CharField(max_length=20, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
     descricao = models.TextField(blank=True, null=True)
+    
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='empresa_set',
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission', 
+        related_name='empresa_set',
+        blank=True
+    )
 
     def __str__(self):
         return self.nome

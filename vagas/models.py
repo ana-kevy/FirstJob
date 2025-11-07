@@ -29,6 +29,7 @@ class Candidatura(models.Model):
     usuario = models.ForeignKey(UsuarioAdaptado, on_delete=models.CASCADE)
     vaga = models.ForeignKey(Vaga, on_delete=models.CASCADE)
     data = models.DateTimeField(auto_now_add=True)
+    
 
     class Meta:
         unique_together = ('usuario', 'vaga')  # evita duplicada

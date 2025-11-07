@@ -8,15 +8,15 @@ class UsuarioAdaptadoAdmin(UserAdmin):
     model = UsuarioAdaptado
 
     # Colunas que aparecem na listagem
-    list_display = ('username', 'email', 'cpf', 'is_empresa', 'is_admin', 'is_staff', 'is_active')
-    list_filter = ('is_empresa', 'is_admin', 'is_staff', 'is_active', 'groups')
+    list_display = ('username', 'email', 'cpf', 'is_admin', 'is_staff', 'is_active')
+    list_filter = ('is_admin', 'is_staff', 'is_active', 'groups')
     search_fields = ('username', 'email', 'cpf')
 
     # Campos extras adicionados aos fieldsets padrão do Django
     fieldsets = UserAdmin.fieldsets + (
         ('Informações adicionais', {
             'fields': (
-                'cpf', 'endereco', 'curriculo', 'habilidades', 'linkportfolio', 'is_empresa', 'is_admin'
+                'cpf', 'endereco', 'curriculo', 'habilidades', 'linkportfolio', 'is_admin'
             ),
         }),
     )
@@ -25,7 +25,7 @@ class UsuarioAdaptadoAdmin(UserAdmin):
     add_fieldsets = UserAdmin.add_fieldsets + (
         ('Informações adicionais', {
             'fields': (
-                'cpf', 'endereco', 'curriculo', 'habilidades', 'link_portfolio', 'is_empresa', 'is_admin'
+                'cpf', 'endereco', 'curriculo', 'habilidades', 'link_portfolio', 'is_admin'
             ),
         }),
     )

@@ -14,7 +14,7 @@ class UsuarioAdaptadoForm(UserCreationForm):
         model = UsuarioAdaptado
         fields = [
             'username', 'email', 'cpf', 'endereco',
-            'curriculo', 'habilidades', 'link_portfolio', 'tipo_usuario', 'password1', 'password2'
+            'curriculo', 'habilidades', 'link_portfolio', 'password1', 'password2'
         ]
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome de usuário'}),

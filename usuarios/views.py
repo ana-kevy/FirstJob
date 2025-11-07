@@ -6,7 +6,7 @@ from .models import UsuarioAdaptado
 from .forms import UsuarioAdaptadoForm, LoginForm
 from django.contrib.auth.models import Group
 from django.http import HttpResponse
-
+from django.contrib.auth.forms import AuthenticationForm
 
 def criar_grupos(request):
     Group.objects.get_or_create(name='EMPRESA')
@@ -15,29 +15,11 @@ def criar_grupos(request):
 
 # ========= CADASTRO =========
 def cadastrar_usuario(request):
-    """Cadastro de usuário (empresa ou candidato)"""
+    """Cadastro de usuário (apenas candidato agora)"""
     if request.method == 'POST':
         form = UsuarioAdaptadoForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-
-            # Define flags automáticas conforme o tipo de usuário (caso não sejam definidas no save do form)
-            if getattr(user, 'tipo_usuario', None) == 'empresa':
-                user.is_empresa = True
-                user.is_candidato = False
-                user.is_admin = False
-            else:
-                user.is_empresa = False
-                user.is_candidato = True
-                user.is_admin = False
-
-            user.save()
-
-            if user.tipo_usuario == 'empresa':
-                grupo, _ = Group.objects.get_or_create(name='EMPRESA')
-            else:
-                grupo, _ = Group.objects.get_or_create(name='USUARIO')
-            grupo.user_set.add(user)
+            user = form.save()
 
             messages.success(request, f'Cadastro de {user.username} realizado com sucesso!')
             return redirect('usuarios:login')
@@ -47,45 +29,50 @@ def cadastrar_usuario(request):
     return render(request, 'usuarios/cadastrar.html', {'form': form})
 
 
-# ========= LOGIN / LOGOUT =========
 def login_view(request):
-    # se já autenticado, redireciona para o painel apropriado
     if request.user.is_authenticated:
-        if getattr(request.user, 'is_empresa', False):
-            return redirect('empresa:painel_empresa')
-        else:
-            return redirect('usuarios:painel_candidato')
+        return redirect_to_painel_correto(request.user)
 
     if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            # passar request é uma boa prática (algumas autenticações usam isso)
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                auth_login(request, user)
-                messages.success(request, f'Bem-vindo, {user.username}!')
-
-                # Redirecionamento conforme tipo
-                if getattr(user, 'is_empresa', False):
-                    return redirect('empresa:painel_empresa')
-                elif getattr(user, 'is_candidato', False):
-                    return redirect('usuarios:painel_candidato')
-                elif getattr(user, 'is_admin', False):
-                    # ajustar conforme sua URL de admin
-                    return redirect('admin:index')
-
-                # fallback
-                return redirect('vagas:listar_vagas')
-            else:
-                messages.error(request, 'Usuário ou senha inválidos.')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            from django.contrib.auth import login as auth_login
+            auth_login(request, user)
+            messages.success(request, f'Bem-vindo, {user.username}!')
+            return redirect_to_painel_correto(user)
         else:
-            messages.error(request, 'Formulário inválido. Verifique os dados.')
-    else:
-        form = LoginForm()
-    return render(request, 'usuarios/login.html', {'form': form})
+            messages.error(request, 'Usuário ou senha inválidos.')
+    
+    return render(request, 'usuarios/login.html')
 
+def redirect_to_painel_correto(user):
+    """Redirecionamento melhorado"""
+    print(f"DEBUG - Redirecionando usuário: {user.username}")
+    print(f"DEBUG - Model name: {user._meta.model_name}")
+    
+    # Método 1: Por instância
+    from empresa.models import Empresa
+    if isinstance(user, Empresa):
+        print("DEBUG - Redirecionando para EMPRESA (por instância)")
+        return redirect('usuarios:painel_empresa')
+    
+    # Método 2: Por nome do modelo
+    elif user._meta.model_name == 'empresa':
+        print("DEBUG - Redirecionando para EMPRESA (por model_name)")
+        return redirect('usuarios:painel_empresa')
+    
+    # Método 3: Por campo específico
+    elif hasattr(user, 'cnpj'):
+        print("DEBUG - Redirecionando para EMPRESA (por campo cnpj)")
+        return redirect('usuarios:painel_empresa')
+    
+    else:
+        print("DEBUG - Redirecionando para CANDIDATO")
+        return redirect('usuarios:painel_candidato')
 
 def logout_view(request):
     auth_logout(request)
@@ -102,8 +89,4 @@ def painel_candidato(request):
 
 @login_required
 def painel_empresa(request):
-    if not hasattr(request.user, 'empresa'):
-        messages.info(request, 'Cadastre sua empresa primeiro.')
-        return redirect('empresa:criar_empresa')
-    # aqui você pode passar vagas criadas, mensagens, etc.
     return render(request, 'empresa/painel_empresa.html')
