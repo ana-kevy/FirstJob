@@ -1,15 +1,13 @@
 from . import views
-from django.urls import path, include 
-from usuarios.views import painel_candidato, painel_empresa 
+from django.urls import path, include
+from usuarios.views import painel_candidato, painel_empresa
 
-app_name = 'usuarios'
+app_name = "usuarios"
 
 urlpatterns = [
-    path('cadastro/', views.cadastrar_usuario, name='cadastrar_usuario'),
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
-    path('painel/candidato/', painel_candidato, name='painel_candidato'),
-    path('painel/empresa/', painel_empresa, name='painel_empresa'),
-
-    
+    path("cadastro/", views.cadastrar_usuario, name="cadastrar_usuario"),
+    path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
+    path("painel/candidato/", painel_candidato, name="painel_candidato"),
+    path("painel/empresa/", painel_empresa, name="painel_empresa"),
 ]

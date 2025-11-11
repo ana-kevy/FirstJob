@@ -2,8 +2,9 @@ from django.db import models
 from empresa.models import Empresa
 from usuarios.models import UsuarioAdaptado
 
+
 class Vaga(models.Model):
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='vagas')
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name="vagas")
     titulo = models.CharField(max_length=100)
     descricao = models.TextField()
     requisitos = models.TextField()
@@ -25,14 +26,14 @@ class Mensagem(models.Model):
     def __str__(self):
         return f"{self.candidato.username} → {self.empresa.nome}: {self.conteudo[:30]}"
 
+
 class Candidatura(models.Model):
     usuario = models.ForeignKey(UsuarioAdaptado, on_delete=models.CASCADE)
     vaga = models.ForeignKey(Vaga, on_delete=models.CASCADE)
     data = models.DateTimeField(auto_now_add=True)
-    
 
     class Meta:
-        unique_together = ('usuario', 'vaga')  # evita duplicada
+        unique_together = ("usuario", "vaga")  # evita duplicada
 
     def __str__(self):
         return f"{self.usuario.username} -> {self.vaga.titulo}"

@@ -1,0 +1,24 @@
+Metadata-Version: 2.4
+Name: First_job
+Version: 0.1.0
+Summary: Projeto para atividade com o toml
+Author-email: Ana Kevylly <anakevyllycavalcantec@gmail.com>, Francisco salesvanio <jrrmatias123@gmail.com>
+Project-URL: Homepage, https://github.com/ana-kevy/First_job
+Project-URL: Repository, https://github.com/ana-kevy/First_job
+Project-URL: Bug Tracker, https://github.com/ana-kevy/First_job/issues
+Requires-Python: >=3.0
+Requires-Dist: asgiref==3.9.2
+Requires-Dist: django==5.2.6
+Requires-Dist: pillow==11.3.0
+Requires-Dist: sqlparse==0.5.3
+Requires-Dist: tzdata==2025.2
+Provides-Extra: dev
+Requires-Dist: black==24.3.0; extra == "dev"
+Requires-Dist: flake8==7.0.0; extra == "dev"
+Requires-Dist: isort==5.13.2; extra == "dev"
+Requires-Dist: pytest==8.2.0; extra == "dev"
+Requires-Dist: pytest-django==4.8.0; extra == "dev"
+Provides-Extra: test
+Requires-Dist: pytest==8.3.5; extra == "test"
+Requires-Dist: pytest-django==4.8.0; extra == "test"
+Requires-Dist: coverage==7.5.0; extra == "test"

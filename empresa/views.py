@@ -7,32 +7,33 @@ from .models import Empresa
 from .forms import EmpresaForm
 from django.contrib.auth.models import Group
 
+
 # Lista de empresas
 class EmpresaListView(LoginRequiredMixin, ListView):
     model = Empresa
-    template_name = 'empresa/listar.html'
-    context_object_name = 'empresas'
+    template_name = "empresa/listar.html"
+    context_object_name = "empresas"
 
 
 # Detalhes de uma empresa
 class EmpresaDetailView(LoginRequiredMixin, DetailView):
     model = Empresa
-    template_name = 'empresa/detalhe.html'
-    context_object_name = 'empresa'
+    template_name = "empresa/detalhe.html"
+    context_object_name = "empresa"
 
 
 # Criar nova empresa
 class EmpresaCreateView(LoginRequiredMixin, CreateView):
     model = Empresa
     form_class = EmpresaForm
-    template_name = 'empresa/form.html'
-    success_url = reverse_lazy('empresa:listar_empresas')
+    template_name = "empresa/form.html"
+    success_url = reverse_lazy("empresa:listar_empresas")
 
     def dispatch(self, request, *args, **kwargs):
         # se já existir empresa, não deixa criar outra
-        if hasattr(request.user, 'empresa'):
-            messages.warning(request, 'Você já possui uma empresa cadastrada.')
-            return redirect('empresa:listar_empresas')
+        if hasattr(request.user, "empresa"):
+            messages.warning(request, "Você já possui uma empresa cadastrada.")
+            return redirect("empresa:listar_empresas")
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -42,27 +43,28 @@ class EmpresaCreateView(LoginRequiredMixin, CreateView):
         messages.success(self.request, "Empresa cadastrada com sucesso!")
         return redirect(self.success_url)
 
+
 def cadastrar_empresa(request):
     """Cadastro de empresa"""
-    if request.method == 'POST':
+    if request.method == "POST":
         form = EmpresaForm(request.POST)
         if form.is_valid():
             empresa = form.save()
 
-            messages.success(request, f'Empresa {empresa.nome} cadastrada com sucesso!')
-            return redirect('usuarios:login')
+            messages.success(request, f"Empresa {empresa.nome} cadastrada com sucesso!")
+            return redirect("usuarios:login")
     else:
         form = EmpresaForm()
 
-    return render(request, 'empresa/cadastrar.html', {'form': form})
+    return render(request, "empresa/cadastrar.html", {"form": form})
 
 
 # Editar empresa
 class EmpresaUpdateView(LoginRequiredMixin, UpdateView):
     model = Empresa
     form_class = EmpresaForm
-    template_name = 'empresa/form.html'
-    success_url = reverse_lazy('empresa:listar_empresas')
+    template_name = "empresa/form.html"
+    success_url = reverse_lazy("empresa:listar_empresas")
 
     def form_valid(self, form):
         messages.success(self.request, "Empresa atualizada com sucesso!")
@@ -72,10 +74,9 @@ class EmpresaUpdateView(LoginRequiredMixin, UpdateView):
 # Excluir empresa
 class EmpresaDeleteView(LoginRequiredMixin, DeleteView):
     model = Empresa
-    template_name = 'empresa/confirm_delete.html'
-    success_url = reverse_lazy('empresa:listar_empresas')
+    template_name = "empresa/confirm_delete.html"
+    success_url = reverse_lazy("empresa:listar_empresas")
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Empresa excluída com sucesso!")
         return super().delete(request, *args, **kwargs)
-

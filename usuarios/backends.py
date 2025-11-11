@@ -2,6 +2,7 @@ from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 from empresa.models import Empresa
 
+
 class MultiUserModelBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         UserModel = get_user_model()
@@ -30,4 +31,3 @@ class MultiUserModelBackend(ModelBackend):
                 return Empresa.objects.get(pk=user_id)
             except Empresa.DoesNotExist:
                 return None
-            
