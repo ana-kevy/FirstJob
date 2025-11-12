@@ -1,7 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-class Empresa(AbstractUser): 
+
+class Empresa(AbstractUser):
     nome = models.CharField(max_length=100)
     cnpj = models.CharField(max_length=18, unique=True)
     endereco = models.CharField(max_length=255, blank=True, null=True)
@@ -22,9 +23,7 @@ class Empresa(AbstractUser):
         blank=True
     )
     user_permissions = models.ManyToManyField(
-        'auth.Permission', 
-        related_name='empresa_set',
-        blank=True
+        "auth.Permission", related_name="empresa_set", blank=True
     )
 
     def __str__(self):

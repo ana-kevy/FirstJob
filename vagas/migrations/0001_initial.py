@@ -10,45 +10,88 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('empresa', '0001_initial'),
+        ("empresa", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Mensagem',
+            name="Mensagem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('conteudo', models.TextField()),
-                ('data_envio', models.DateTimeField(auto_now_add=True)),
-                ('candidato', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('empresa', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='empresa.empresa')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("conteudo", models.TextField()),
+                ("data_envio", models.DateTimeField(auto_now_add=True)),
+                (
+                    "candidato",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+                (
+                    "empresa",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="empresa.empresa"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Vaga',
+            name="Vaga",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('titulo', models.CharField(max_length=100)),
-                ('descricao', models.TextField()),
-                ('requisitos', models.TextField()),
-                ('salario', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
-                ('carga_horaria', models.TextField()),
-                ('ativo', models.BooleanField(default=True)),
-                ('data_publicacao', models.DateTimeField(auto_now_add=True)),
-                ('empresa', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='vagas', to='empresa.empresa')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("titulo", models.CharField(max_length=100)),
+                ("descricao", models.TextField()),
+                ("requisitos", models.TextField()),
+                (
+                    "salario",
+                    models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True),
+                ),
+                ("carga_horaria", models.TextField()),
+                ("ativo", models.BooleanField(default=True)),
+                ("data_publicacao", models.DateTimeField(auto_now_add=True)),
+                (
+                    "empresa",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="vagas",
+                        to="empresa.empresa",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Candidatura',
+            name="Candidatura",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('data', models.DateTimeField(auto_now_add=True)),
-                ('usuario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('vaga', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='vagas.vaga')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("data", models.DateTimeField(auto_now_add=True)),
+                (
+                    "usuario",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+                (
+                    "vaga",
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="vagas.vaga"),
+                ),
             ],
             options={
-                'unique_together': {('usuario', 'vaga')},
+                "unique_together": {("usuario", "vaga")},
             },
         ),
     ]

@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+First_job.egg-info/PKG-INFO
+First_job.egg-info/SOURCES.txt
+First_job.egg-info/dependency_links.txt
+First_job.egg-info/requires.txt
+First_job.egg-info/top_level.txt
+core/__init__.py
+core/asgi.py
+core/settings.py
+core/urls.py
+core/wsgi.py
