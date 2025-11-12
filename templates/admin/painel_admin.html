@@ -1,0 +1,258 @@
+<!-- templates/admin/dashboard.html -->
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Admin - FirstJob{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-gray-800">Dashboard Administrativo</h1>
+        <div class="text-muted">
+            <i class="bi bi-calendar me-2"></i>
+            <span id="current-date"></span>
+        </div>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="row">
+        <!-- Total de Usuários -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total de Usuários
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">1.248</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total de Empresas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Empresas Cadastradas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">156</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-buildings fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total de Vagas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Vagas Ativas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">89</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-briefcase-fill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Candidaturas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Candidaturas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">1.024</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-file-text fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos e Tabelas -->
+    <div class="row">
+        <!-- Gráfico de Vagas por Categoria -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Vagas por Categoria</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <!-- Espaço para gráfico futuro -->
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-bar-chart-fill fa-3x mb-3"></i>
+                            <p>Gráfico de vagas por categoria</p>
+                            <small>(Implementação futura)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações Rápidas -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ações Rápidas</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-people me-2"></i>Gerenciar Usuários
+                        </a>
+                        <a href="#" class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-buildings me-2"></i>Gerenciar Empresas
+                        </a>
+                        <a href="#" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-briefcase me-2"></i>Ver Todas as Vagas
+                        </a>
+                        <a href="#" class="btn btn-outline-warning btn-sm">
+                            <i class="bi bi-bar-chart me-2"></i>Gerar Relatórios
+                        </a>
+                        <a href="/admin/" class="btn btn-outline-dark btn-sm" target="_blank">
+                            <i class="bi bi-gear me-2"></i>Admin Django
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Últimas Atividades -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Últimas Atividades</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-success">●</small>
+                        <small class="ms-2">Nova empresa cadastrada</small>
+                        <div class="text-muted small">Hoje, 10:30</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-info">●</small>
+                        <small class="ms-2">5 novas vagas publicadas</small>
+                        <div class="text-muted small">Hoje, 09:15</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-warning">●</small>
+                        <small class="ms-2">12 novas candidaturas</small>
+                        <div class="text-muted small">Ontem, 16:45</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-primary">●</small>
+                        <small class="ms-2">Usuário reportou problema</small>
+                        <div class="text-muted small">Ontem, 14:20</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Usuários Recentes -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Usuários Recentes</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Tipo</th>
+                                    <th>Data Cadastro</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>João Silva</td>
+                                    <td>joao@email.com</td>
+                                    <td><span class="badge bg-primary">Candidato</span></td>
+                                    <td>10/11/2025</td>
+                                    <td><span class="badge bg-success">Ativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Tech Solutions Ltda</td>
+                                    <td>contato@techsolutions.com</td>
+                                    <td><span class="badge bg-success">Empresa</span></td>
+                                    <td>09/11/2025</td>
+                                    <td><span class="badge bg-success">Ativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Maria Santos</td>
+                                    <td>maria@email.com</td>
+                                    <td><span class="badge bg-primary">Candidato</span></td>
+                                    <td>08/11/2025</td>
+                                    <td><span class="badge bg-warning">Pendente</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Inova Corp</td>
+                                    <td>rh@inovacorp.com</td>
+                                    <td><span class="badge bg-success">Empresa</span></td>
+                                    <td>07/11/2025</td>
+                                    <td><span class="badge bg-success">Ativo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 10px;
+}
+.border-left-primary { border-left: 4px solid #4e73df !important; }
+.border-left-success { border-left: 4px solid #1cc88a !important; }
+.border-left-info { border-left: 4px solid #36b9cc !important; }
+.border-left-warning { border-left: 4px solid #f6c23e !important; }
+.shadow { box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important; }
+</style>
+
+<script>
+// Data atual no header
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    document.getElementById('current-date').textContent = 
+        now.toLocaleDateString('pt-BR', options);
+});
+</script>
+{% endblock %}

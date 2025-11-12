@@ -90,3 +90,14 @@ def painel_candidato(request):
 @login_required
 def painel_empresa(request):
     return render(request, 'empresa/painel_empresa.html')
+
+@login_required
+def painel_admin(request):
+    if not request.user.is_admin_user:
+        from django.contrib import messages
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('vagas:listar_vagas')
+    return render(request, 'admin/painel_admin.html')
+
+
+

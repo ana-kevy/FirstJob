@@ -63,11 +63,32 @@
             background-color: var(--primary-green);
             color: white;
         }
+        .sidebar .nav-link.active {
+            background-color: var(--primary-green);
+            color: white;
+            border-left: 4px solid #fff;
+        }
+        .sidebar-header {
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-radius: 5px;
+            margin: 0 10px 15px 10px;
+            padding: 10px 15px;
+        }
+        .sidebar hr {
+            border-color: rgba(255,255,255,0.1);
+            margin: 15px 10px;
+        }
         .main-content {
             margin-left: var(--sidebar-width);
             margin-top: 60px;
             padding: 30px;
             min-height: calc(100vh - 60px);
+        }
+        .nav-link i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -85,27 +106,110 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <nav class="nav flex-column">
-            <a class="nav-link active" href="{% url 'vagas:listar_vagas' %}">
-                <i class="bi bi-house-door"></i> Início
-            </a>
+            
+            <!-- Header com tipo de usuário -->
+            <div class="sidebar-header text-light">
+                <small class="text-uppercase">
+                    {% if user.is_authenticated %}
+                        {% if user.is_empresa_user %}
+                            <i class="bi bi-building"></i> Área da Empresa
+                        {% elif user.is_admin_user %}
+                            <i class="bi bi-shield-check"></i> Administração
+                        {% else %}
+                            <i class="bi bi-person-badge"></i> Área do Candidato
+                        {% endif %}
+                    {% else %}
+                        <i class="bi bi-person"></i> Visitante
+                    {% endif %}
+                </small>
+            </div>
 
-            {% if request.user.is_authenticated and request.user.groups.all.0.name == "EMPRESA" %}
+            <!-- Conteúdo para USUÁRIOS AUTENTICADOS -->
+            {% if user.is_authenticated %}
+                
+                <!-- EMPRESAS -->
+                {% if user.is_empresa_user %}
+                    <a class="nav-link {% if request.resolver_match.url_name == 'painel_empresa' %}active{% endif %}" 
+                    href="{% url 'usuarios:painel_empresa' %}">
+                        <i class="bi bi-house-door"></i> Início
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-plus-circle"></i> Nova Vaga
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-briefcase"></i> Minhas Vagas
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-archive"></i> Vagas Arquivadas
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-building"></i> Perfil da Empresa
+                    </a>
 
-                <a class="nav-link" href="{% url 'vagas:criar_vaga' %}">
-                    <i class="bi bi-plus-circle"></i> Nova Vaga
+                <!-- ADMIN -->
+                {% elif user.is_admin_user %}
+                    <a class="nav-link {% if request.resolver_match.url_name == 'painel_admin' %}active{% endif %}" 
+                    href="#">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-buildings"></i> Gerenciar Empresas
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-people-fill"></i> Gerenciar Usuários
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-bar-chart"></i> Relatórios
+                    </a>
+                    <hr>
+                    <a class="nav-link" href="/admin/" target="_blank">
+                        <i class="bi bi-gear-fill"></i> Admin Django
+                    </a>
+
+                <!-- CANDIDATOS -->
+                {% else %}
+                    <a class="nav-link {% if request.resolver_match.url_name == 'painel_candidato' %}active{% endif %}" 
+                    href="{% url 'usuarios:painel_candidato' %}">
+                        <i class="bi bi-house-door"></i> Início
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-search"></i> Buscar Vagas
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-file-text"></i> Minhas Candidaturas
+                    </a>
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-person"></i> Meu Perfil
+                    </a>
+                {% endif %}
+
+                <hr>
+                <a class="nav-link" href="{% url 'usuarios:logout' %}">
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </a>
+
+            <!-- CONTEÚDO para VISITANTES -->
+            {% else %}
+                <a class="nav-link" href="{% url 'vagas:listar_vagas' %}">
+                    <i class="bi bi-house-door"></i> Início
+                </a>
+                <a class="nav-link" href="#">
+                    <i class="bi bi-search"></i> Buscar Vagas
+                </a>
+                <a class="nav-link" href="#">
+                    <i class="bi bi-buildings"></i> Empresas
+                </a>
+                <hr>
+                <a class="nav-link" href="{% url 'usuarios:login' %}">
+                    <i class="bi bi-box-arrow-in-right"></i> Entrar
+                </a>
+                <a class="nav-link" href="{% url 'usuarios:registro' %}">
+                    <i class="bi bi-person-plus"></i> Cadastrar
                 </a>
             {% endif %}
-
-            <a class="nav-link" href="{% url 'empresa:listar_empresas' %}">
-                <i class="bi bi-buildings"></i> Empresas
-            </a>
-            <a class="nav-link" href="{% url 'usuarios:logout' %}">
-                <i class="bi bi-buildings"></i> sair
-            </a>
         </nav>
     </div>
 
-    <!-- Conteúdo Principal -->
     <main class="main-content">
         {% if messages %}
             {% for message in messages %}

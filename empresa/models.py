@@ -8,6 +8,14 @@ class Empresa(AbstractUser):
     telefone = models.CharField(max_length=20, blank=True, null=True)
     descricao = models.TextField(blank=True, null=True)
     
+    @property
+    def is_empresa_user(self):
+        return True
+    
+    @property
+    def is_candidato_user(self):
+        return False
+    
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='empresa_set',
