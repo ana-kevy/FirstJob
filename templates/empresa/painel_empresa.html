@@ -1,25 +1,224 @@
+<!-- templates/empresa/painel_empresa.html -->
 {% extends 'base.html' %}
+
+{% block title %}Painel da Empresa - FirstJob{% endblock %}
+
 {% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-gray-800">Painel da Empresa</h1>
+            <p class="text-muted mb-0">Bem-vinda, {{ empresa.nome }}!</p>
+        </div>
+        <div class="text-end">
+            <a href="#" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Nova Vaga
+            </a>
+        </div>
+    </div>
 
-<div class="container mt-4">
-    <h2>Painel da Empresa</h2>
-    <p>Bem-vindo(a), {{ request.user.username }}!</p>
+    <!-- Cards de Estatísticas -->
+    <div class="row">
+        <!-- Total de Vagas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total de Vagas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_vagas }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-briefcase fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="list-group mt-4">
+        <!-- Vagas Ativas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Vagas Ativas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vagas_ativas }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-eye fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <a href="{% url 'vagas:criar_vaga' %}" class="list-group-item list-group-item-action">
-            Criar nova vaga
-        </a>
+        <!-- Candidaturas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Candidaturas (30 dias)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ candidaturas_recentes }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-people fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <a href="{% url 'vagas:listar_vagas' %}" class="list-group-item list-group-item-action">
-             Minhas Vagas
-        </a>
+        <!-- Visualizações -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Visualizações do Perfil
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">156</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-bar-chart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <a href="{% url 'empresa:listar_empresas' %}" class="list-group-item list-group-item-action">
-             Mensagens
-        </a>
+    <!-- Ações Rápidas -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ações Rápidas</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <a href="#" class="btn btn-outline-primary w-100 h-100 py-3">
+                                <i class="bi bi-plus-circle display-6 d-block mb-2"></i>
+                                Nova Vaga
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="#" class="btn btn-outline-success w-100 h-100 py-3">
+                                <i class="bi bi-list-ul display-6 d-block mb-2"></i>
+                                Minhas Vagas
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="#" class="btn btn-outline-info w-100 h-100 py-3">
+                                <i class="bi bi-building display-6 d-block mb-2"></i>
+                                Perfil da Empresa
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="#" class="btn btn-outline-warning w-100 h-100 py-3">
+                                <i class="bi bi-people display-6 d-block mb-2"></i>
+                                Candidatos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Atividades Recentes -->
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Atividades Recentes</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-success">●</small>
+                        <small class="ms-2">Nova candidatura recebida</small>
+                        <div class="text-muted small">Hoje, 14:30</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-info">●</small>
+                        <small class="ms-2">Vaga "Desenvolvedor Python" publicada</small>
+                        <div class="text-muted small">Ontem, 09:15</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-warning">●</small>
+                        <small class="ms-2">Perfil da empresa atualizado</small>
+                        <div class="text-muted small">05/11/2025</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-primary">●</small>
+                        <small class="ms-2">10 visualizações no seu perfil</small>
+                        <div class="text-muted small">04/11/2025</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dicas -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Dicas para sua Empresa</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex">
+                                <i class="bi bi-lightbulb text-warning me-3 fs-4"></i>
+                                <div>
+                                    <h6 class="fw-bold">Complete seu perfil</h6>
+                                    <p class="small text-muted mb-0">Empresas com perfil completo recebem 3x mais candidaturas.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex">
+                                <i class="bi bi-clock text-info me-3 fs-4"></i>
+                                <div>
+                                    <h6 class="fw-bold">Responda rapidamente</h6>
+                                    <p class="small text-muted mb-0">Candidatos esperam resposta em até 48 horas.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="d-flex">
+                                <i class="bi bi-megaphone text-success me-3 fs-4"></i>
+                                <div>
+                                    <h6 class="fw-bold">Divulgue suas vagas</h6>
+                                    <p class="small text-muted mb-0">Compartilhe nas redes sociais para alcançar mais pessoas.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<style>
+.card {
+    border: none;
+    border-radius: 10px;
+}
+.border-left-primary { border-left: 4px solid #4e73df !important; }
+.border-left-success { border-left: 4px solid #1cc88a !important; }
+.border-left-info { border-left: 4px solid #36b9cc !important; }
+.border-left-warning { border-left: 4px solid #f6c23e !important; }
+.shadow { box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important; }
+</style>
 {% endblock %}

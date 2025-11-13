@@ -79,7 +79,14 @@ def painel_candidato(request):
 
 @login_required
 def painel_empresa(request):
-    return render(request, 'empresa/painel_empresa.html')
+    context = {
+        'empresa': request.user,
+        'nome_empresa': request.user.nome, 
+        'total_vagas': 0,
+        'vagas_ativas': 0,
+        'candidaturas_recentes': 0,
+    }
+    return render(request, 'empresa/painel_empresa.html', context)
 
 @login_required
 def painel_admin(request):

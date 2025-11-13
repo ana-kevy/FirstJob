@@ -1,31 +1,117 @@
-{% extends 'base.html' %}
-
-{% block title %}Início{% endblock %}
-
-{% block content %}
-<div class="container text-center py-5">
-
-    <h1>Bem-vindo ao Sistema de Vagas</h1>
-    <p class="lead">Plataforma para conexão entre candidatos e empresas.</p>
-
-    <hr>
-
-    <div class="mt-4">
-        <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-primary btn-lg">
-            Ver Vagas Disponíveis
-        </a>
-    </div>
-
-    {% if request.user.is_authenticated %}
-        <p class="mt-4">
-            Olá, <strong>{{ request.user.first_name|default:request.user.username }}</strong>
-        </p>
-    {% else %}
-        <div class="mt-5">
-            <a href="#" class="btn btn-success btn-lg me-3">Entrar</a>
-            <a href="#" class="btn btn-outline-dark btn-lg">Criar Conta</a>
+<!-- templates/home.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FirstJob - Encontre seu primeiro emprego</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-blue: #344ec5;
+            --light-blue: #e3f2fd;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1e3a8a 100%);
+            color: white;
+            padding: 100px 0;
+        }
+        .btn-custom {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-custom:hover {
+            background-color: #2d42a8;
+            transform: translateY(-2px);
+            color: white;
+        }
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Encontre seu <span class="text-info">primeiro emprego</span>
+                    </h1>
+                    <p class="lead mb-4">
+                        Conectamos talentos promissores às melhores oportunidades. 
+                        Sua carreira começa aqui!
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="{% url 'usuarios:login' %}" class="btn btn-light btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Fazer Login
+                        </a>
+                        <a href="{% url 'usuarios:cadastrar_usuario' %}" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>Criar Conta
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <i class="bi bi-briefcase-fill display-1 text-info"></i>
+                </div>
+            </div>
         </div>
-    {% endif %}
+    </section>
 
-</div>
-{% endblock %}
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col">
+                    <h2 class="fw-bold">Por que escolher o FirstJob?</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                    <i class="bi bi-search feature-icon"></i>
+                    <h4>Encontre Vagas</h4>
+                    <p>Busque oportunidades que combinam com seu perfil e habilidades.</p>
+                </div>
+                <div class="col-md-4 text-center mb-4">
+                    <i class="bi bi-building feature-icon"></i>
+                    <h4>Para Empresas</h4>
+                    <p>Encontre os talentos ideais para fazer sua empresa crescer.</p>
+                </div>
+                <div class="col-md-4 text-center mb-4">
+                    <i class="bi bi-graph-up feature-icon"></i>
+                    <h4>Comece sua Carreira</h4>
+                    <p>Dê o primeiro passo rumo ao sucesso profissional.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="bg-light py-5">
+        <div class="container text-center">
+            <h3 class="fw-bold mb-3">Pronto para começar?</h3>
+            <p class="mb-4">Junte-se a milhares de candidatos e empresas que já confiam no FirstJob.</p>
+            <a href="{% url 'usuarios:cadastrar_usuario' %}" class="btn btn-custom btn-lg">
+                <i class="bi bi-rocket-takeoff me-2"></i>Começar Agora
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2025 FirstJob. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

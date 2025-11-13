@@ -4,11 +4,6 @@ from .models import UsuarioAdaptado
 
 
 class UsuarioAdaptadoForm(UserCreationForm):
-    tipo_usuario = forms.ChoiceField(
-        choices=[("candidato", "Candidato"), ("empresa", "Empresa")],
-        label="Tipo de Usuário",
-        widget=forms.Select(attrs={"class": "form-select"}),
-    )
 
     class Meta:
         model = UsuarioAdaptado
@@ -60,16 +55,7 @@ class UsuarioAdaptadoForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        tipo = self.cleaned_data["tipo_usuario"]
-
-        # Define o tipo de usuário
-        if tipo == "empresa":
-            user.is_empresa = True
-            user.is_candidato = False
-        else:
-            user.is_empresa = False
-            user.is_candidato = True
-
+        user.is_candidato = True  # Define como candidato
         if commit:
             user.save()
         return user
