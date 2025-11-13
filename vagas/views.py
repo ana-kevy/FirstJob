@@ -1,26 +1,56 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator
 from .models import Vaga, Mensagem, Candidatura
 from .form import VagaForm, MensagemForm
 from empresa.models import Empresa
-from django.contrib.auth.decorators import user_passes_test
+from django import forms
 
 
 # ========= LISTAGEM =========
 def listar_vagas(request):
-    """Lista todas as vagas ativas"""
-    vagas = Vaga.objects.filter(ativo=True).order_by("-data_publicacao")
-    paginator = Paginator(vagas, 6)  # 6 vagas por página
+    """Lista todas as vagas ativas com filtros opcionais"""
+
+    # ====== FILTROS ======
+    filtro_titulo = request.GET.get("titulo", "")
+    filtro_cidade = request.GET.get("cidade", "")
+    filtro_modalidade = request.GET.get("modalidade", "")  # remoto/presencial
+    filtro_area = request.GET.get("area", "")
+
+    vagas = Vaga.objects.filter(ativo=True)
+
+    if filtro_titulo:
+        vagas = vagas.filter(titulo__icontains=filtro_titulo)
+
+    if filtro_cidade:
+        vagas = vagas.filter(cidade__icontains=filtro_cidade)
+
+    if filtro_modalidade:
+        vagas = vagas.filter(modalidade__icontains=filtro_modalidade)
+
+    if filtro_area:
+        vagas = vagas.filter(area__icontains=filtro_area)
+
+    vagas = vagas.order_by("-data_publicacao")
+
+    # paginação
+    paginator = Paginator(vagas, 6)
     page = request.GET.get("page")
     vagas_paginadas = paginator.get_page(page)
-    return render(request, "listar_vagas.html", {"vagas": vagas_paginadas})
+
+    contexto = {
+        "vagas": vagas_paginadas,
+        "filtro_titulo": filtro_titulo,
+        "filtro_cidade": filtro_cidade,
+        "filtro_modalidade": filtro_modalidade,
+        "filtro_area": filtro_area,
+    }
+
+    return render(request, "listar_vagas.html", contexto)
 
 
-# ========= DETALHE =========
 def detalhar_vaga(request, vaga_id):
-    """Exibe detalhes de uma vaga e permite enviar mensagem"""
     vaga = get_object_or_404(Vaga, id=vaga_id)
     mensagens = Mensagem.objects.filter(empresa=vaga.empresa).order_by("-data_envio")
 
@@ -54,7 +84,7 @@ def criar_vaga(request):
     # só empresas podem criar vagas
     if not request.user.groups.filter(name="EMPRESA").exists():
         messages.error(request, "Somente contas do tipo empresa podem cadastrar vagas.")
-        return redirect("vagas:listar_vagas")
+        return redirect("vagas:listar_vagas") #tirar isso, o login já garante que somente as empresas irão criar vagas
 
     if request.method == "POST":
         form = VagaForm(request.POST)

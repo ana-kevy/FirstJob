@@ -33,7 +33,7 @@ class Candidatura(models.Model):
     data = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("usuario", "vaga")  # evita duplicada
+        unique_together = ("usuario", "vaga")  #evita duplicada
 
     def __str__(self):
         return f"{self.usuario.username} -> {self.vaga.titulo}"

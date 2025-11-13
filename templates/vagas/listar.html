@@ -8,6 +8,44 @@
 
 <a href="{% url 'vagas:criar_vaga' %}" class="btn btn-success mb-3">Criar nova vaga</a>
 
+<!-- inicio dos filtros -->
+<form method="get" class="mb-4">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label for="titulo" class="form-label">Título</label>
+            <input type="text" name="titulo" id="titulo" class="form-control" 
+                   placeholder="Buscar por título" value="{{ filtro_titulo }}">
+        </div>
+
+        <div class="col-md-3">
+            <label for="cidade" class="form-label">Cidade</label>
+            <input type="text" name="cidade" id="cidade" class="form-control" 
+                   placeholder="Digite a cidade" value="{{ filtro_cidade }}">
+        </div>
+
+        <div class="col-md-3">
+            <label for="area" class="form-label">Área</label>
+            <input type="text" name="area" id="area" class="form-control" 
+                   placeholder="Ex: Tecnologia, Vendas..." value="{{ filtro_area }}">
+        </div>
+
+        <div class="col-md-2">
+            <label for="modalidade" class="form-label">Modalidade</label>
+            <select name="modalidade" id="modalidade" class="form-select">
+                <option value="">Todas</option>
+                <option value="Presencial" {% if filtro_modalidade == 'Presencial' %}selected{% endif %}>Presencial</option>
+                <option value="Remoto" {% if filtro_modalidade == 'Remoto' %}selected{% endif %}>Remoto</option>
+                <option value="Híbrido" {% if filtro_modalidade == 'Híbrido' %}selected{% endif %}>Híbrido</option>
+            </select>
+        </div>
+
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </div>
+</form>
+<!-- fim dos filtros-->
+
 <table class="table table-striped">
     <thead>
         <tr>
