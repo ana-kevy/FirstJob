@@ -12,6 +12,7 @@ class Vaga(models.Model):
     carga_horaria = models.TextField()
     ativo = models.BooleanField(default=True)
     data_publicacao = models.DateTimeField(auto_now_add=True)
+    tipo_vaga = models.CharField()
 
     def __str__(self):
         return self.titulo

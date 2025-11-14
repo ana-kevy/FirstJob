@@ -6,7 +6,6 @@ class VagaForm(forms.ModelForm):
     class Meta:
         model = Vaga
         fields = [
-            "empresa",
             "titulo",
             "descricao",
             "requisitos",
@@ -15,7 +14,6 @@ class VagaForm(forms.ModelForm):
             "ativo",
         ]
         widgets = {
-            "empresa": forms.Select(attrs={"class": "form-control"}),
             "titulo": forms.TextInput(attrs={"class": "form-control"}),
             "descricao": forms.Textarea(attrs={"class": "form-control"}),
             "requisitos": forms.Textarea(attrs={"class": "form-control"}),

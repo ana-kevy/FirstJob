@@ -8,11 +8,7 @@ from empresa.models import Empresa
 from django import forms
 
 
-# ========= LISTAGEM =========
 def listar_vagas(request):
-    """Lista todas as vagas ativas com filtros opcionais"""
-
-    # ====== FILTROS ======
     filtro_titulo = request.GET.get("titulo", "")
     filtro_cidade = request.GET.get("cidade", "")
     filtro_modalidade = request.GET.get("modalidade", "")  # remoto/presencial
@@ -71,7 +67,6 @@ def detalhar_vaga(request, vaga_id):
     )
 
 
-# ========= CRUD DE VAGAS (EMPRESA) =========
 def grupo_required(nome_grupo):
     def check(user):
         return user.is_authenticated and user.groups.filter(name=nome_grupo).exists()
@@ -79,38 +74,19 @@ def grupo_required(nome_grupo):
     return user_passes_test(check)
 
 
-@grupo_required("EMPRESA")
 def criar_vaga(request):
-    # só empresas podem criar vagas
-    if not request.user.groups.filter(name="EMPRESA").exists():
-        messages.error(request, "Somente contas do tipo empresa podem cadastrar vagas.")
-        return redirect("vagas:listar_vagas") #tirar isso, o login já garante que somente as empresas irão criar vagas
-
     if request.method == "POST":
         form = VagaForm(request.POST)
-        # se user é empresa, ignorar o campo 'empresa' enviado e setar do usuário
         if form.is_valid():
             vaga = form.save(commit=False)
-            # setar empresa automaticamente
-            if hasattr(request.user, "empresa"):
-                vaga.empresa = request.user.empresa
-            else:
-                messages.error(request, "Sua conta de empresa não está vinculada corretamente.")
-                return redirect("empresa:criar_empresa")
+            vaga.empresa = request.user  
             vaga.save()
             messages.success(request, "Vaga criada com sucesso!")
-            return redirect("vagas:listar_vagas")
+            return redirect("usuarios:painel_empresa")  
     else:
         form = VagaForm()
-        # esconder o campo empresa no form (opcional visual)
-        if hasattr(request.user, "empresa"):
-            # tornar o campo hidden para não confundir usuário empresa
-            form.fields["empresa"].widget = forms.HiddenInput()
-            form.fields["empresa"].required = False
-            form.initial["empresa"] = request.user.empresa.pk
-
+    
     return render(request, "vagas/criar.html", {"form": form})
-
 
 @login_required
 def editar_vaga(request, vaga_id):
@@ -138,7 +114,6 @@ def excluir_vaga(request, vaga_id):
 def candidatar(request, vaga_id):
     vaga = get_object_or_404(Vaga, id=vaga_id)
 
-    # evita se candidatar duas vezes
     if Candidatura.objects.filter(usuario=request.user, vaga=vaga).exists():
         messages.warning(request, "Você já se candidatou nessa vaga.")
         return redirect("vagas:detalhar_vaga", vaga_id=vaga.id)

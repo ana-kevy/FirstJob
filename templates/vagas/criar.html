@@ -9,6 +9,18 @@
     <div class="mb-3">
       {{ form.as_p }}
     </div>
+    <div class="mb-3">
+      <label class="form-label">Tipo de Vaga *</label>
+      <select class="form-select" name="tipo_vaga" required>
+        <option value="clt">CLT</option>
+        <option value="pj">PJ</option>
+        <option value="estagio">Estágio</option>
+        <option value="jovem_aprendiz">Jovem Aprendiz</option>
+        <option value="freelancer">Freelancer</option>
+        <option value="tempo_determinado">Tempo Determinado</option>
+        <option value="autonomo">Autônomo</option>
+      </select>
+    </div>
 
     <button class="btn btn-success" type="submit">Criar vaga</button>
     <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-secondary">Voltar</a>
