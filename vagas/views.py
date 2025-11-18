@@ -43,7 +43,7 @@ def listar_vagas(request):
         "filtro_area": filtro_area,
     }
 
-    return render(request, "listar_vagas.html", contexto)
+    return render(request, "vagas/listar.html", contexto)
 
 
 def detalhar_vaga(request, vaga_id):
