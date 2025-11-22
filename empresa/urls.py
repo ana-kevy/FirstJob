@@ -10,4 +10,9 @@ urlpatterns = [
     path("nova/", views.EmpresaCreateView.as_view(), name="criar_empresa"),
     path("<int:pk>/editar/", views.EmpresaUpdateView.as_view(), name="editar_empresa"),
     path("<int:pk>/excluir/", views.EmpresaDeleteView.as_view(), name="excluir_empresa"),
+    path('vagas/<int:vaga_id>/', views.detalhar_vaga_empresa, name='detalhar_vaga_empresa'),
+    path('vagas/', views.listar_vagas_empresa, name='listar_vagas_empresa'),
+    path('vagas/<int:vaga_id>/excluir/', views.excluir_vaga_empresa, name='excluir_vaga'),
+    path('candidatura/<int:candidatura_id>/status/<str:novo_status>/', 
+         views.atualizar_status_candidatura, name='atualizar_status_candidatura'),
 ]

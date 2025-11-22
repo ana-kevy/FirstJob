@@ -1,0 +1,170 @@
+<!-- templates/empresa/detalhar_vaga_empresa.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ vaga.titulo }} - FirstJob{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Cabeçalho com botões -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-gray-800">{{ vaga.titulo }}</h1>
+            <p class="text-muted mb-0">{{ vaga.empresa.nome }}</p>
+        </div>
+        <div>
+            <a href="{% url 'empresa:listar_vagas_empresa' %}" class="btn btn-secondary me-2">
+                <i class="bi bi-arrow-left me-1"></i>Voltar
+            </a>
+            <a href="{% url 'vagas:editar_vaga' vaga.id %}" class="btn btn-warning me-2">
+                <i class="bi bi-pencil me-1"></i>Editar
+            </a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalExcluirVaga">
+                <i class="bi bi-trash me-1"></i>Excluir
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Detalhes da vaga daquela empresa-->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Detalhes da Vaga
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong class="text-primary">Descrição:</strong>
+                        <p class="mt-2">{{ vaga.descricao|linebreaks }}</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong class="text-primary">Tipo de Vaga:</strong>
+                            <br>
+                            <span class="badge bg-info">{{ vaga.tipo_vaga|title }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong class="text-primary">Salário:</strong>
+                            <br>
+                            {% if vaga.salario %}
+                                <span class="fw-bold">R$ {{ vaga.salario }}</span>
+                            {% else %}
+                                <span class="text-muted">A combinar</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong class="text-primary">Carga Horária:</strong>
+                            <br>
+                            {{ vaga.carga_horaria }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong class="text-primary">Status:</strong>
+                            <br>
+                            <span class="badge {% if vaga.ativo %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if vaga.ativo %}Ativa{% else %}Inativa{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong class="text-primary">Requisitos:</strong>
+                        <p class="mt-2">{{ vaga.requisitos|linebreaks }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de candidatos -->
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-people me-2"></i>Candidaturas
+                    </h5>
+                    <span class="badge bg-light text-dark">{{ candidaturas.count }}</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if candidaturas %}
+                    <div class="list-group list-group-flush">
+                        {% for candidatura in candidaturas %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1 fw-bold">{{ candidatura.usuario.get_full_name|default:candidatura.usuario.username }}</h6>
+                                    <p class="mb-1 text-muted small">
+                                        <i class="bi bi-envelope me-1"></i>{{ candidatura.usuario.email }}
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar me-1"></i>
+                                        Candidatou-se em {{ candidatura.data_candidatura|date:"d/m/Y" }}
+                                    </small>
+                                </div>
+                                <div class="text-end ms-3">
+                                    <span class="badge 
+                                        {% if candidatura.status == 'pendente' %}bg-warning
+                                        {% elif candidatura.status == 'visualizada' %}bg-info
+                                        {% elif candidatura.status == 'entrevista' %}bg-primary
+                                        {% elif candidatura.status == 'rejeitada' %}bg-danger
+                                        {% else %}bg-success{% endif %} mb-2">
+                                        {{ candidatura.get_status_display }}
+                                    </span>
+                                    <br>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="#" class="btn btn-outline-primary" title="Ver perfil">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'empresa:atualizar_status_candidatura' candidatura.id 'entrevista' %}" 
+                                           class="btn btn-outline-success" title="Chamar para entrevista">
+                                            <i class="bi bi-calendar-check"></i>
+                                        </a>
+                                        <a href="{% url 'empresa:atualizar_status_candidatura' candidatura.id 'rejeitada' %}" 
+                                           class="btn btn-outline-danger" title="Rejeitar candidatura">
+                                            <i class="bi bi-x-lg"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-people display-4 text-muted"></i>
+                        <h5 class="text-muted mt-3">Nenhuma candidatura</h5>
+                        <p class="text-muted">Ainda não há candidatos para esta vaga.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmação de exclusão -->
+<div class="modal fade" id="modalExcluirVaga" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir a vaga <strong>"{{ vaga.titulo }}"</strong>?</p>
+                <p class="text-danger mb-0">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Esta ação não pode ser desfeita. Todas as candidaturas associadas serão perdidas.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="post" action="{% url 'empresa:excluir_vaga' vaga.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Excluir Vaga</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

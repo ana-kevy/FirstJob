@@ -90,13 +90,13 @@ def criar_vaga(request):
 
 @login_required
 def editar_vaga(request, vaga_id):
-    vaga = get_object_or_404(Vaga, id=vaga_id, empresa__usuario=request.user)
+    vaga = get_object_or_404(Vaga, id=vaga_id, empresa=request.user)
     if request.method == "POST":
         form = VagaForm(request.POST, instance=vaga)
         if form.is_valid():
             form.save()
             messages.success(request, "Vaga atualizada com sucesso!")
-            return redirect("vagas:listar_vagas")
+            return redirect("empresa:listar_vagas_empresa")
     else:
         form = VagaForm(instance=vaga)
     return render(request, "vagas/editar.html", {"form": form, "vaga": vaga})
