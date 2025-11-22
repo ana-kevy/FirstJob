@@ -5,25 +5,62 @@
 
   <form method="post">
     {% csrf_token %}
-    {{ form.non_field_errors }}
+    
+    <!-- Campos básicos do form -->
     <div class="mb-3">
-      {{ form.as_p }}
+      <label class="form-label">Título da Vaga *</label>
+      {{ form.titulo }}
     </div>
+
     <div class="mb-3">
-      <label class="form-label">Tipo de Vaga *</label>
-      <select class="form-select" name="tipo_vaga" required>
-        <option value="clt">CLT</option>
-        <option value="pj">PJ</option>
-        <option value="estagio">Estágio</option>
-        <option value="jovem_aprendiz">Jovem Aprendiz</option>
-        <option value="freelancer">Freelancer</option>
-        <option value="tempo_determinado">Tempo Determinado</option>
-        <option value="autonomo">Autônomo</option>
-      </select>
+      <label class="form-label">Descrição *</label>
+      {{ form.descricao }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Requisitos *</label>
+      {{ form.requisitos }}
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Salário</label>
+        {{ form.salario }}
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Carga Horária *</label>
+        {{ form.carga_horaria }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Área de Atuação *</label>
+        {{ form.area }}
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Modalidade *</label>
+        {{ form.tipo_vaga }}
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Tipo de Contratação *</label>
+        {{ form.tipo_contratacao }}
+      </div>
     </div>
 
     <button class="btn btn-success" type="submit">Criar vaga</button>
     <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-secondary">Voltar</a>
   </form>
 </div>
+
+<style>
+.form-control, .form-select {
+  border-radius: 8px;
+  padding: 10px;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #344ec5;
+  box-shadow: 0 0 0 0.2rem rgba(52, 78, 197, 0.25);
+}
+</style>
 {% endblock %}
