@@ -9,12 +9,11 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 text-gray-800">Painel da Empresa</h1>
+            <p class="text-muted mb-0">Gerencie suas vagas e candidaturas</p>
         </div>
-        <div class="text-end">
-            <a href="#" class="btn btn-primary">
-                <i class="bi bi-plus-circle me-2"></i>Nova Vaga
-            </a>
-        </div>
+        <a href="{% url 'vagas:criar_vaga' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Nova Vaga
+        </a>
     </div>
 
     <!-- Cards de Estatísticas -->
@@ -96,8 +95,9 @@
         </div>
     </div>
 
-    <!-- Ações Rápidas -->
+    <!-- Conteúdo Principal -->
     <div class="row">
+        <!-- Ações Rápidas -->
         <div class="col-lg-6">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -106,13 +106,13 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <a href="#" class="btn btn-outline-primary w-100 h-100 py-3">
+                            <a href="{% url 'vagas:criar_vaga' %}" class="btn btn-outline-primary w-100 h-100 py-3">
                                 <i class="bi bi-plus-circle display-6 d-block mb-2"></i>
                                 Nova Vaga
                             </a>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <a href="#" class="btn btn-outline-success w-100 h-100 py-3">
+                            <a href="{% url 'empresa:listar_vagas_empresa' %}" class="btn btn-outline-success w-100 h-100 py-3">
                                 <i class="bi bi-list-ul display-6 d-block mb-2"></i>
                                 Minhas Vagas
                             </a>
@@ -160,48 +160,6 @@
                         <small class="text-primary">●</small>
                         <small class="ms-2">10 visualizações no seu perfil</small>
                         <div class="text-muted small">04/11/2025</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Dicas -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Dicas para sua Empresa</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <div class="d-flex">
-                                <i class="bi bi-lightbulb text-warning me-3 fs-4"></i>
-                                <div>
-                                    <h6 class="fw-bold">Complete seu perfil</h6>
-                                    <p class="small text-muted mb-0">Empresas com perfil completo recebem 3x mais candidaturas.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="d-flex">
-                                <i class="bi bi-clock text-info me-3 fs-4"></i>
-                                <div>
-                                    <h6 class="fw-bold">Responda rapidamente</h6>
-                                    <p class="small text-muted mb-0">Candidatos esperam resposta em até 48 horas.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="d-flex">
-                                <i class="bi bi-megaphone text-success me-3 fs-4"></i>
-                                <div>
-                                    <h6 class="fw-bold">Divulgue suas vagas</h6>
-                                    <p class="small text-muted mb-0">Compartilhe nas redes sociais para alcançar mais pessoas.</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

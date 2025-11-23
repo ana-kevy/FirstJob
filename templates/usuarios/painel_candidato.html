@@ -1,20 +1,205 @@
+<!-- templates/vagas/home_candidato.html -->
 {% extends 'base.html' %}
+
+{% block title %}Painel do Candidato - FirstJob{% endblock %}
+
 {% block content %}
-
-<div class="container mt-4">
-    <h2>Painel do Candidato</h2>
-
-    <div class="list-group mt-4">
-
-        <a href="{% url 'vagas:listar_vagas' %}" class="list-group-item list-group-item-action">
-             Ver vagas disponíveis
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-gray-800">Painel do Candidato</h1>
+            <p class="text-muted mb-0">Encontre sua oportunidade ideal</p>
+        </div>
+        <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-primary">
+            <i class="bi bi-search me-2"></i>Buscar Vagas
         </a>
+    </div>
 
-        <a href="#" class="list-group-item list-group-item-action">
-             Currículo e Portfólio (em preparo)
-        </a>
+    <!-- Cards de Estatísticas -->
+    <div class="row">
+        <!-- Total de Vagas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Vagas Ativas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_vagas }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-briefcase fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Novas Vagas -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Novas Esta Semana
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vagas_recentes|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-clock-history fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Áreas Diferentes -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Áreas Diferentes
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ vagas_por_area|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-grid fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empresas Parceiras -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Empresas Parceiras
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">+50</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-building fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Vagas Recentes -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="bi bi-clock-history me-2"></i>Vagas Recentes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if vagas_recentes %}
+                    <div class="row">
+                        {% for vaga in vagas_recentes %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-primary">{{ vaga.titulo }}</h6>
+                                    <p class="card-text small text-muted">
+                                        {{ vaga.descricao|truncatewords:15 }}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">{{ vaga.empresa.nome }}</small>
+                                        <span class="badge bg-info">{{ vaga.tipo_vaga|title }}</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-success">
+                                            <i class="bi bi-calendar me-1"></i>
+                                            {{ vaga.data_publicacao|date:"d/m" }}
+                                        </small>
+                                        <a href="{% url 'vagas:detalhar_vaga' vaga.id %}" class="btn btn-sm btn-primary">
+                                            Ver Vaga
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-briefcase display-4 text-muted"></i>
+                        <h5 class="text-muted mt-3">Nenhuma vaga recente</h5>
+                        <p class="text-muted">Novas vagas aparecerão aqui em breve.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Áreas em Alta -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="bi bi-graph-up me-2"></i>Áreas em Alta
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for area in vagas_por_area %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>{{ area.area|title }}</span>
+                        <span class="badge bg-primary">{{ area.total }} vagas</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Dicas Rápidas -->
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="bi bi-lightbulb me-2"></i>Dicas para Candidatos
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-primary">Atualize seu currículo</h6>
+                        <p class="small text-muted mb-0">Mantenha suas informações sempre atualizadas.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-success">Pesquise com filtros</h6>
+                        <p class="small text-muted mb-0">Use os filtros para encontrar vagas específicas.</p>
+                    </div>
+                    <div class="mb-0">
+                        <h6 class="text-info">Candidate-se rápido</h6>
+                        <p class="small text-muted mb-0">Vagas recentes recebem mais atenção.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<style>
+.card {
+    border: none;
+    border-radius: 10px;
+}
+.border-left-primary { border-left: 4px solid #4e73df !important; }
+.border-left-success { border-left: 4px solid #1cc88a !important; }
+.border-left-info { border-left: 4px solid #36b9cc !important; }
+.border-left-warning { border-left: 4px solid #f6c23e !important; }
+.shadow { box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important; }
+</style>
 {% endblock %}

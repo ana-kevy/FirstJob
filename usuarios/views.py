@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import UsuarioAdaptado
-from .forms import UsuarioAdaptadoForm, LoginForm
+from .forms import UsuarioAdaptadoForm
 from django.contrib.auth.models import Group
 from django.http import HttpResponse
-from django.contrib.auth.forms import AuthenticationForm
+from django.db.models import Count
+from django.utils import timezone
+from datetime import timedelta
+from vagas.models import Vaga
+from usuarios.models import UsuarioAdaptado
 
 
 def criar_grupos(request):
@@ -15,9 +18,8 @@ def criar_grupos(request):
     return HttpResponse("Grupos criados")
 
 
-# ========= CADASTRO =========
+# CADASTRO 
 def cadastrar_usuario(request):
-    """Cadastro de usuário (apenas candidato agora)"""
     if request.method == "POST":
         form = UsuarioAdaptadoForm(request.POST)
         if form.is_valid():
@@ -42,8 +44,6 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            from django.contrib.auth import login as auth_login
-
             auth_login(request, user)
             messages.success(request, f"Bem-vindo, {user.username}!")
             return redirect_to_painel_correto(user)
@@ -75,7 +75,32 @@ def logout_view(request):
 # PAINÉIS 
 @login_required
 def painel_candidato(request):
-    return render(request, "usuarios/painel_candidato.html")
+    sete_dias_atras = timezone.now() - timedelta(days=7)
+    vagas_recentes = Vaga.objects.filter(
+        ativo=True, 
+        data_publicacao__gte=sete_dias_atras
+    ).order_by('-data_publicacao')[:6]
+    
+    # Vagas por area para estatisticas
+    vagas_por_area = Vaga.objects.filter(ativo=True).values(
+        'area'
+    ).annotate(
+        total=Count('id')
+    ).order_by('-total')[:5]
+    
+    # Total de vagas
+    total_vagas = Vaga.objects.filter(ativo=True).count()
+
+    vagas_por_area_ordenadas = sorted(vagas_por_area, key=lambda x: x['total'], reverse=True)
+
+    context = {
+        'vagas_recentes': vagas_recentes,
+        'vagas_por_area': vagas_por_area,
+        'total_vagas': total_vagas,
+        'sete_dias_atras': sete_dias_atras,
+        'vagas_por_area': vagas_por_area_ordenadas,
+    }
+    return render(request, 'usuarios/painel_candidato.html', context)
 
 @login_required
 def painel_empresa(request):
