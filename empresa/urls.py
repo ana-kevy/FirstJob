@@ -13,6 +13,6 @@ urlpatterns = [
     path('vagas/<int:vaga_id>/', views.detalhar_vaga_empresa, name='detalhar_vaga_empresa'),
     path('vagas/', views.listar_vagas_empresa, name='listar_vagas_empresa'),
     path('vagas/<int:vaga_id>/excluir/', views.excluir_vaga_empresa, name='excluir_vaga'),
-    path('candidatura/<int:candidatura_id>/status/<str:novo_status>/', 
-         views.atualizar_status_candidatura, name='atualizar_status_candidatura'),
+    path('candidatura/<int:candidatura_id>/status/<str:novo_status>/',views.atualizar_status_candidatura, name='atualizar_status_candidatura'),
+    path("perfil/", views.perfil_empresa, name="perfil_empresa"),
 ]

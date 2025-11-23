@@ -9,6 +9,11 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from vagas.models import Vaga, Candidatura
 
+@login_required
+def perfil_empresa(request):
+    empresa = request.user  # usuário autenticado já é um objeto Empresa
+    return render(request, "empresa/perfil_empresa.html", {"empresa": empresa})
+
 # Lista de empresas
 class EmpresaListView(LoginRequiredMixin, ListView):
     model = Empresa

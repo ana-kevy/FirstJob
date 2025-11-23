@@ -117,7 +117,7 @@
     <div class="sidebar">
         <nav class="nav flex-column">
             
-            <!-- Header com tipo de usuário -->
+            # Header com tipo de usuário
             <div class="sidebar-header text-light">
                 <small class="text-uppercase">
                     {% if user.is_authenticated %}
@@ -134,10 +134,10 @@
                 </small>
             </div>
 
-            <!-- Conteúdo para USUÁRIOS AUTENTICADOS -->
+            #conteudo para USUÁRIOS AUTENTICADOS 
             {% if user.is_authenticated %}
                 
-                <!-- EMPRESAS -->
+                empresa
                 {% if user.is_empresa_user %}
                     <a class="nav-link {% if request.resolver_match.url_name == 'painel_empresa' %}active{% endif %}" 
                     href="{% url 'usuarios:painel_empresa' %}">
@@ -148,12 +148,12 @@
                     </a>
                     <a class="nav-link" href="{% url 'empresa:listar_vagas_empresa' %}">
                         <i class="bi bi-briefcase"></i> Minhas Vagas
-                    </a>
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-building"></i> Perfil da Empresa
+                    <a class="nav-link {% if request.resolver_match.url_name == 'perfil_empresa' %}active{% endif %}" 
+                    href="{% url 'empresa:perfil_empresa' %}">
+                     <i class="bi bi-building"></i> Perfil da Empresa
                     </a>
 
-                <!-- ADMIN -->
+                #adim
                 {% elif user.is_admin_user %}
                     <a class="nav-link {% if request.resolver_match.url_name == 'painel_admin' %}active{% endif %}" 
                     href="#">
@@ -173,7 +173,7 @@
                         <i class="bi bi-gear-fill"></i> Admin Django
                     </a>
 
-                <!-- CANDIDATOS -->
+                # CANDIDATOS
                 {% else %}
                     <a class="nav-link {% if request.resolver_match.url_name == 'painel_candidato' %}active{% endif %}" 
                     href="{% url 'usuarios:painel_candidato' %}">
@@ -185,8 +185,9 @@
                     <a class="nav-link" href="#">
                         <i class="bi bi-file-text"></i> Minhas Candidaturas
                     </a>
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-person"></i> Meu Perfil
+                    <a class="nav-link {% if request.resolver_match.url_name == 'perfil_usuario' %}active{% endif %}"
+                    href="{% url 'usuarios:perfil_usuario' %}">
+                     <i class="bi bi-person"></i> Meu Perfil
                     </a>
                 {% endif %}
 
@@ -195,7 +196,7 @@
                     <i class="bi bi-box-arrow-right"></i> Sair
                 </a>
 
-            <!-- CONTEÚDO para VISITANTES -->
+            # CONTEÚDO para VISITANTES
             {% else %}
                 <a class="nav-link" href="{% url 'vagas:listar_vagas' %}">
                     <i class="bi bi-house-door"></i> Início

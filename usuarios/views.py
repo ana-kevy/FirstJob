@@ -11,6 +11,10 @@ from datetime import timedelta
 from vagas.models import Vaga
 from usuarios.models import UsuarioAdaptado
 
+@login_required
+def perfil_usuario(request):
+    usuario = request.user
+    return render(request, "usuarios/perfil_usuario.html", {"usuario": usuario})
 
 def criar_grupos(request):
     Group.objects.get_or_create(name="EMPRESA")
