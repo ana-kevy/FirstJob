@@ -3,16 +3,94 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.utils import timezone
+from datetime import timedelta
 from .models import Empresa
 from .forms import EmpresaForm
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from vagas.models import Vaga, Candidatura
+from usuarios.models import UsuarioAdaptado
 
 @login_required
 def perfil_empresa(request):
-    empresa = request.user  # usuário autenticado já é um objeto Empresa
-    return render(request, "empresa/perfil_empresa.html", {"empresa": empresa})
+    empresa = request.user
+    # Estatísticas para o painel
+    total_vagas = Vaga.objects.filter(empresa=empresa).count()
+    vagas_ativas = Vaga.objects.filter(empresa=empresa, ativo=True).count()
+    
+    # Candidaturas dos últimos 30 dias - CORREÇÃO: data em vez de data_candidatura
+    data_limite = timezone.now() - timedelta(days=30)
+    candidaturas_recentes = Candidatura.objects.filter(
+        vaga__empresa=empresa, 
+        data__gte=data_limite  # ← CORREÇÃO AQUI
+    ).count()
+    
+    context = {
+        "empresa": empresa,
+        "total_vagas": total_vagas,
+        "vagas_ativas": vagas_ativas,
+        "candidaturas_recentes": candidaturas_recentes,
+    }
+    return render(request, "empresa/perfil_empresa.html", context)
+
+# VIEW: Painel da empresa
+@login_required
+def painel_empresa(request):
+    empresa = request.user
+    # Estatísticas para o painel
+    total_vagas = Vaga.objects.filter(empresa=empresa).count()
+    vagas_ativas = Vaga.objects.filter(empresa=empresa, ativo=True).count()
+    
+    # Candidaturas dos últimos 30 dias - CORREÇÃO: data em vez de data_candidatura
+    data_limite = timezone.now() - timedelta(days=30)
+    candidaturas_recentes = Candidatura.objects.filter(
+        vaga__empresa=empresa, 
+        data__gte=data_limite  # ← CORREÇÃO AQUI
+    ).count()
+    
+    # Atividades recentes
+    atividades_recentes = []
+    
+    # Adicionar novas vagas como atividades
+    vagas_recentes = Vaga.objects.filter(
+        empresa=empresa,
+        data_publicacao__gte=timezone.now() - timedelta(days=7)
+    )[:5]
+    
+    for vaga in vagas_recentes:
+        atividades_recentes.append({
+            'tipo': 'vaga_publicada',
+            'descricao': f'Vaga "{vaga.titulo}" publicada',
+            'data': vaga.data_publicacao,
+            'icone': 'text-info'
+        })
+    
+    # Adicionar candidaturas recentes como atividades - CORREÇÃO: data em vez de data_candidatura
+    candidaturas_novas = Candidatura.objects.filter(
+        vaga__empresa=empresa,
+        data__gte=timezone.now() - timedelta(days=7)  # ← CORREÇÃO AQUI
+    ).select_related('vaga')[:5]
+    
+    for candidatura in candidaturas_novas:
+        atividades_recentes.append({
+            'tipo': 'nova_candidatura',
+            'descricao': f'Nova candidatura para "{candidatura.vaga.titulo}"',
+            'data': candidatura.data,  # ← CORREÇÃO AQUI
+            'icone': 'text-success'
+        })
+    
+    # Ordenar atividades por data (mais recentes primeiro)
+    atividades_recentes.sort(key=lambda x: x['data'], reverse=True)
+    
+    context = {
+        "empresa": empresa,
+        "total_vagas": total_vagas,
+        "vagas_ativas": vagas_ativas,
+        "candidaturas_recentes": candidaturas_recentes,
+        "atividades_recentes": atividades_recentes[:5]  # Últimas 5 atividades
+    }
+    return render(request, "empresa/painel_empresa.html", context)
 
 # Lista de empresas
 class EmpresaListView(LoginRequiredMixin, ListView):
@@ -131,3 +209,23 @@ def atualizar_status_candidatura(request, candidatura_id, novo_status):
     
     messages.success(request, f'Status atualizado para {candidatura.get_status_display()}')
     return redirect('empresa:detalhar_vaga_empresa', vaga_id=candidatura.vaga.id)
+
+# NOVA VIEW: Ver perfil do candidato - CORREÇÃO: UsuarioAdaptado em vez de Usuario
+@login_required
+def ver_perfil_candidato(request, candidato_id):
+    candidato = get_object_or_404(UsuarioAdaptado, id=candidato_id)  # ← CORREÇÃO AQUI
+    # Verificar se a empresa tem acesso a este candidato (através de candidaturas)
+    candidaturas_empresa = Candidatura.objects.filter(
+        usuario=candidato,
+        vaga__empresa=request.user
+    ).exists()
+    
+    if not candidaturas_empresa:
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('empresa:listar_vagas_empresa')
+    
+    context = {
+        'candidato': candidato,
+        'empresa': request.user
+    }
+    return render(request, 'empresa/perfil_candidato.html', context)
