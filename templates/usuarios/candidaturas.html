@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Minhas Candidaturas - FirstJob{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-gray-800">Minhas Candidaturas</h1>
+        <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-primary">
+            <i class="bi bi-search me-2"></i>Buscar Mais Vagas
+        </a>
+    </div>
+
+    {% if candidaturas %}
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-file-text me-2"></i>
+                Total: {{ candidaturas.count }} candidatura(s)
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Vaga</th>
+                            <th>Empresa</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for candidatura in candidaturas %}
+                        <tr>
+                            <td>
+                                <strong>{{ candidatura.vaga.titulo }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    {{ candidatura.vaga.tipo_contratacao|title }} • 
+                                    {{ candidatura.vaga.tipo_vaga|title }}
+                                </small>
+                            </td>
+                            <td>{{ candidatura.vaga.empresa.nome }}</td>
+                            <td>
+                                <small>{{ candidatura.data|date:"d/m/Y" }}</small>
+                                <br>
+                                <small class="text-muted">{{ candidatura.data|date:"H:i" }}</small>
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if candidatura.status == 'pendente' %}bg-warning
+                                    {% elif candidatura.status == 'visualizada' %}bg-info
+                                    {% elif candidatura.status == 'entrevista' %}bg-primary
+                                    {% elif candidatura.status == 'rejeitada' %}bg-danger
+                                    {% else %}bg-success{% endif %}">
+                                    {{ candidatura.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'vagas:detalhar_vaga' candidatura.vaga.id %}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Ver Vaga
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-file-text display-1 text-muted"></i>
+        <h4 class="text-muted mt-3">Nenhuma candidatura</h4>
+        <p class="text-muted">Você ainda não se candidatou a nenhuma vaga.</p>
+        <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-primary">
+            <i class="bi bi-search me-2"></i>Buscar Vagas
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 10px;
+}
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+</style>
+{% endblock %}

@@ -26,10 +26,15 @@
     </div>
 
     <div class="mt-4 d-flex gap-2">
-        <a href="{% url 'vagas:candidatar' vaga.id %}" class="btn btn-success">Candidatar</a>
-        <a href="{% url 'vagas:editar_vaga' vaga.id %}" class="btn btn-warning">Editar</a>
-        <a href="{% url 'vagas:excluir_vaga' vaga.id %}" class="btn btn-danger">Excluir</a>
-        <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-secondary">Voltar</a>
+        {% if user.is_authenticated and user.is_candidato_user %}
+            <a href="{% url 'vagas:candidatar' vaga.id %}" class="btn btn-success">Candidatar</a>
+        {% endif %}
+        
+        {% if user.is_authenticated and user.is_admin_user %}
+            <a href="{% url 'vagas:editar_vaga' vaga.id %}" class="btn btn-warning">Editar</a>
+            <a href="{% url 'vagas:excluir_vaga' vaga.id %}" class="btn btn-danger">Excluir</a>
+        {% endif %}
+        <a href="{{ request.META.HTTP_REFERER|default:'vagas:listar_vagas' }}" class="btn btn-secondary">Voltar</a>
     </div>
 
 </div>

@@ -1,204 +1,121 @@
 {% extends "base.html" %}
 
-{% block title %}Perfil do Usuário{% endblock %}
+{% block title %}Perfil do Candidato - FirstJob{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <!-- Cabeçalho -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2 class="mb-1"><i class="bi bi-person-badge me-2 text-primary"></i>Meu Perfil</h2>
-                    <p class="text-muted mb-0">Gerencie suas informações pessoais e profissionais</p>
-                </div>
-                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-                    <i class="bi bi-patch-check-fill me-1"></i>Ativo
-                </span>
-            </div>
-        </div>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-gray-800">Perfil do Candidato</h1>
+        <a href="#" class="btn btn-primary">
+            <i class="bi bi-pencil me-2"></i>Editar Perfil
+        </a>
     </div>
 
     <div class="row">
-        <!-- Informações Principais -->
         <div class="col-lg-8">
-            <div class="card shadow-lg border-0 mb-4">
-                <div class="card-header bg-primary bg-opacity-10 border-0 py-4">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 70px; height: 70px;">
-                            <i class="bi bi-person fs-3"></i>
-                        </div>
-                        <div>
-                            <h3 class="card-title mb-1 fw-bold">{{ usuario.username }}</h3>
-                            <p class="text-muted mb-0">{{ usuario.email }}</p>
-                        </div>
-                    </div>
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Informações Pessoais</h5>
                 </div>
-
-                <div class="card-body p-4">
-                    <!-- Informações Pessoais -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <div class="info-card border rounded-3 p-3 h-100">
-                                <div class="d-flex align-items-center mb-2">
-                                    <i class="bi bi-person-vcard text-primary me-2"></i>
-                                    <h6 class="mb-0 fw-semibold">CPF</h6>
-                                </div>
-                                <p class="mb-0 text-dark fs-6">
-                                    {{ usuario.cpf|default:"Não informado" }}
-                                </p>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Nome Completo:</strong>
+                            <p class="mt-1">{{ usuario.get_full_name|default:usuario.username }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>CPF:</strong>
+                            <p class="mt-1">{{ usuario.cpf|default:"Não informado" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Email:</strong>
+                            <p class="mt-1">{{ usuario.email }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Usuário:</strong>
+                            <p class="mt-1">{{ usuario.username }}</p>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <strong>Endereço:</strong>
+                            <p class="mt-1">{{ usuario.endereco|default:"Não informado" }}</p>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <strong>Habilidades:</strong>
+                            <div class="mt-2 p-3 bg-light rounded">
+                                {{ usuario.habilidades|default:"Nenhuma habilidade cadastrada."|linebreaks }}
                             </div>
                         </div>
-                        
-                        <div class="col-md-6">
-                            <div class="info-card border rounded-3 p-3 h-100">
-                                <div class="d-flex align-items-center mb-2">
-                                    <i class="bi bi-geo-alt text-primary me-2"></i>
-                                    <h6 class="mb-0 fw-semibold">Endereço</h6>
-                                </div>
-                                <p class="mb-0 text-dark fs-6">
-                                    {{ usuario.endereco|default:"Não informado" }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Habilidades -->
-                    <div class="mb-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-tools text-primary me-2 fs-5"></i>
-                            <h5 class="mb-0 fw-semibold">Habilidades</h5>
-                        </div>
-                        <div class="bg-light bg-opacity-50 rounded-3 p-4">
-                            {% if usuario.habilidades %}
-                                <div class="habilidades-content">
-                                    {{ usuario.habilidades|linebreaks }}
-                                </div>
-                            {% else %}
-                                <p class="text-muted mb-0">
-                                    <i class="bi bi-info-circle me-1"></i>
-                                    Nenhuma habilidade informada. Adicione suas habilidades para destacar seu perfil.
-                                </p>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- Portfólio e Currículo -->
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="info-card border rounded-3 p-3 h-100">
-                                <div class="d-flex align-items-center mb-3">
-                                    <i class="bi bi-link-45deg text-primary me-2"></i>
-                                    <h6 class="mb-0 fw-semibold">Portfólio</h6>
-                                </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Portfólio:</strong>
+                            <p class="mt-1">
                                 {% if usuario.link_portfolio %}
-                                    <a href="{{ usuario.link_portfolio }}" target="_blank" class="btn btn-outline-primary btn-sm w-100">
-                                        <i class="bi bi-box-arrow-up-right me-1"></i>
-                                        Acessar Portfólio
-                                    </a>
-                                    <small class="text-muted mt-2 d-block text-truncate">
+                                    <a href="{{ usuario.link_portfolio }}" target="_blank" class="text-decoration-none">
                                         {{ usuario.link_portfolio }}
-                                    </small>
-                                {% else %}
-                                    <p class="text-muted mb-0">
-                                        <i class="bi bi-x-circle me-1"></i>
-                                        Não informado
-                                    </p>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="info-card border rounded-3 p-3 h-100">
-                                <div class="d-flex align-items-center mb-3">
-                                    <i class="bi bi-file-earmark-person text-primary me-2"></i>
-                                    <h6 class="mb-0 fw-semibold">Currículo</h6>
-                                </div>
-                                {% if usuario.curriculo %}
-                                    <a href="{{ usuario.curriculo.url }}" download class="btn btn-success btn-sm w-100">
-                                        <i class="bi bi-download me-1"></i>
-                                        Baixar Currículo
                                     </a>
-                                    <small class="text-muted mt-2 d-block">
-                                        {{ usuario.curriculo.name|slice:"20:" }}
-                                    </small>
                                 {% else %}
-                                    <p class="text-muted mb-0">
-                                        <i class="bi bi-x-circle me-1"></i>
-                                        Nenhum arquivo enviado
-                                    </p>
-                                    <small class="text-info">
-                                        Envie seu currículo para se candidatar às vagas.
-                                    </small>
+                                    Não informado
                                 {% endif %}
-                            </div>
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Currículo:</strong>
+                            <p class="mt-1">
+                                {% if usuario.curriculo %}
+                                    <a href="{{ usuario.curriculo.url }}" download class="btn btn-sm btn-success">
+                                        <i class="bi bi-download me-1"></i>Baixar
+                                    </a>
+                                {% else %}
+                                    Não enviado
+                                {% endif %}
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sidebar de Ações -->
         <div class="col-lg-4">
-            <!-- Ações Rápidas -->
-            <div class="card shadow-lg border-0 mb-4">
-                <div class="card-header bg-warning bg-opacity-10 border-0 py-3">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="bi bi-lightning-charge text-warning me-2"></i>
-                        Ações Rápidas
-                    </h5>
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">Ações Rápidas</h5>
                 </div>
-                <div class="card-body p-3">
-                    <div class="d-grid gap-3">
-                        <a href="{% url 'usuarios:cadastrar_usuario' %}" class="btn btn-primary btn-lg py-3">
-                            <i class="bi bi-pencil-square me-2"></i>
-                            Editar Perfil
-                            <small class="d-block fw-normal mt-1 opacity-75">Atualizar informações</small>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-primary mb-2">
+                            <i class="bi bi-search me-2"></i>Buscar Vagas
                         </a>
-                        
-                        <a href="#" class="btn btn-outline-primary btn-lg py-3">
-                            <i class="bi bi-briefcase me-2"></i>
-                            Minhas Candidaturas
-                            <small class="d-block fw-normal mt-1 opacity-75">Ver status das vagas</small>
-                        </a>
-                        
-                        <a href="#" class="btn btn-outline-success btn-lg py-3">
-                            <i class="bi bi-search me-2"></i>
-                            Buscar Vagas
-                            <small class="d-block fw-normal mt-1 opacity-75">Encontrar oportunidades</small>
+                        <a href="{% url 'usuarios:minhas_candidaturas' %}" class="btn btn-outline-primary mb-2">
+                            <i class="bi bi-file-text me-2"></i>Minhas Candidaturas
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Estatísticas -->
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-info bg-opacity-10 border-0 py-3">
-                    <h5 class="mb-0 fw-semibold">
-                        <i class="bi bi-graph-up text-info me-2"></i>
-                        Meu Progresso
-                    </h5>
+            <!-- Estatísticas do Candidato -->
+            <div class="card shadow mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Minhas Estatísticas</h5>
                 </div>
                 <div class="card-body">
-                    <div class="row text-center g-3">
-                        <div class="col-6">
-                            <div class="border rounded-3 p-3 bg-primary bg-opacity-5">
-                                <h4 class="text-primary mb-1 fw-bold">5</h4>
-                                <small class="text-muted">Candidaturas</small>
+                    <div class="text-center">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <div class="border rounded p-2">
+                                    <h4 class="text-primary mb-1">5</h4>
+                                    <small class="text-muted">Candidaturas</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="border rounded p-2">
+                                    <h4 class="text-success mb-1">2</h4>
+                                    <small class="text-muted">Entrevistas</small>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="border rounded-3 p-3 bg-success bg-opacity-5">
-                                <h4 class="text-success mb-1 fw-bold">2</h4>
-                                <small class="text-muted">Entrevistas</small>
-                            </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 75%"></div>
                         </div>
-                        <div class="col-12 mt-2">
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <small class="text-muted">Perfil 75% completo</small>
-                        </div>
+                        <small class="text-muted">Perfil 75% completo</small>
                     </div>
                 </div>
             </div>
@@ -207,54 +124,19 @@
 </div>
 
 <style>
-    .card {
-        border-radius: 15px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
-    }
-    
-    .info-card {
-        transition: all 0.3s ease;
-        border: 1px solid #e9ecef !important;
-    }
-    
-    .info-card:hover {
-        border-color: #0d6efd !important;
-        background-color: #f8f9fa;
-    }
-    
-    .btn {
-        border-radius: 10px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-    
-    .btn:hover {
-        transform: translateY(-2px);
-    }
-    
-    .habilidades-content {
-        line-height: 1.6;
-    }
-    
-    .habilidades-content p {
-        margin-bottom: 0.5rem;
-    }
-    
-    .bg-primary {
-        background: linear-gradient(135deg, #0d6efd, #0a58ca) !important;
-    }
-    
-    .progress {
-        border-radius: 10px;
-    }
-    
-    .progress-bar {
-        border-radius: 10px;
-    }
+.card {
+    border: none;
+    border-radius: 10px;
+}
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+.btn {
+    border-radius: 8px;
+}
+.progress {
+    border-radius: 10px;
+    height: 8px;
+}
 </style>
 {% endblock %}

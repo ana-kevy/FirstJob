@@ -12,4 +12,5 @@ urlpatterns = [
     path("painel/empresa/", painel_empresa, name="painel_empresa"),
     path("admin/painel/", painel_admin, name="painel_admin"),
     path("perfil/", views.perfil_usuario, name="perfil_usuario"),
+    path('minhas-candidaturas/', views.minhas_candidaturas, name='minhas_candidaturas'),
 ]

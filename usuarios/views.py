@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
-from vagas.models import Vaga
+from vagas.models import Vaga, Candidatura
 from usuarios.models import UsuarioAdaptado
 
 @login_required
@@ -120,3 +120,15 @@ def painel_empresa(request):
 @login_required
 def painel_admin(request):
     return render(request, 'admin/painel_admin.html')
+
+
+@login_required
+def minhas_candidaturas(request):
+    candidaturas = Candidatura.objects.filter(
+        usuario=request.user
+    ).select_related('vaga', 'vaga__empresa').order_by('-data')
+    
+    context = {
+        'candidaturas': candidaturas,
+    }
+    return render(request, 'usuarios/candidaturas.html', context)
