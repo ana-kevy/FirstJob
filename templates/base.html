@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         :root {
-            --primary-green: #344ec5;
-            --light-green: #E8F5E9;
+            --primary-blue: #344ec5;
+            --light-blue: #e3f2fd;
             --dark-gray: #2C3E50;
             --sidebar-width: 250px;
         }
@@ -18,7 +18,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .top-navbar {
-            background-color: var(--primary-green);
+            background-color: var(--primary-blue);
             height: 60px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
@@ -60,11 +60,11 @@
             transition: all 0.3s;
         }
         .sidebar .nav-link:hover {
-            background-color: var(--primary-green);
+            background-color: var(--primary-blue);
             color: white;
         }
         .sidebar .nav-link.active {
-            background-color: var(--primary-green);
+            background-color: var(--primary-blue);
             color: white;
             border-left: 4px solid #fff;
         }
@@ -141,23 +141,27 @@
                 </small>
             </div>
 
-            <!-- conteudo para USUÁRIOS AUTENTICADOS -->
+            #conteudo para USUÁRIOS AUTENTICADOS 
             {% if user.is_authenticated %}
+                
+                empresa
                 {% if user.is_empresa_user %}
                     <a class="nav-link {% if request.resolver_match.url_name == 'painel_empresa' %}active{% endif %}" 
-                    href="{% url 'usuarios:painel_empresa' %}">
-                        <i class="bi bi-house-door"></i> Início
+                    href="{% url 'empresa:painel_empresa' %}">
+                        <i class="bi bi-speedometer2"></i> Painel
                     </a>
                     <a class="nav-link" href="{% url 'vagas:criar_vaga' %}">
                         <i class="bi bi-plus-circle"></i> Nova Vaga
                     </a>
                     <a class="nav-link" href="{% url 'empresa:listar_vagas_empresa' %}">
                         <i class="bi bi-briefcase"></i> Minhas Vagas
+                    </a>
                     <a class="nav-link {% if request.resolver_match.url_name == 'perfil_empresa' %}active{% endif %}" 
                     href="{% url 'empresa:perfil_empresa' %}">
-                     <i class="bi bi-building"></i> Perfil da Empresa
+                        <i class="bi bi-building"></i> Perfil da Empresa
                     </a>
 
+                #adim
                 {% elif user.is_admin_user %}
                     <a class="nav-link {% if request.resolver_match.url_name == 'painel_admin' %}active{% endif %}" 
                     href="#">
@@ -173,7 +177,7 @@
                         <i class="bi bi-gear-fill"></i> Admin Django
                     </a>
 
-                <!--  CANDIDATOS -->
+                # CANDIDATOS
                 {% else %}
                     <a class="nav-link {% if request.resolver_match.url_name == 'painel_candidato' %}active{% endif %}" 
                     href="{% url 'usuarios:painel_candidato' %}">
@@ -187,13 +191,32 @@
                     </a>
                     <a class="nav-link {% if request.resolver_match.url_name == 'perfil_usuario' %}active{% endif %}"
                     href="{% url 'usuarios:perfil_usuario' %}">
-                     <i class="bi bi-person"></i> Meu Perfil
+                        <i class="bi bi-person"></i> Meu Perfil
                     </a>
                 {% endif %}
 
-                <div style="flex-grow: 0.8;"></div>
-                <a class="nav-link text-danger" href="{% url 'usuarios:logout' %}">
-                    <i class="bi bi-box-arrow-right me-2"></i>Sair
+                <hr>
+                <a class="nav-link" href="{% url 'usuarios:logout' %}">
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </a>
+
+            # CONTEÚDO para VISITANTES
+            {% else %}
+                <a class="nav-link" href="{% url 'vagas:listar_vagas' %}">
+                    <i class="bi bi-house-door"></i> Início
+                </a>
+                <a class="nav-link" href="#">
+                    <i class="bi bi-search"></i> Buscar Vagas
+                </a>
+                <a class="nav-link" href="#">
+                    <i class="bi bi-buildings"></i> Empresas
+                </a>
+                <hr>
+                <a class="nav-link" href="{% url 'usuarios:login' %}">
+                    <i class="bi bi-box-arrow-in-right"></i> Entrar
+                </a>
+                <a class="nav-link" href="{% url 'usuarios:registro' %}">
+                    <i class="bi bi-person-plus"></i> Cadastrar
                 </a>
 
             {% endif %}

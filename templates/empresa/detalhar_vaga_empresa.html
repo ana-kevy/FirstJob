@@ -4,6 +4,7 @@
 
 {% block content %}
 <div class="container-fluid">
+    # Cabeçalho com botões 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 text-gray-800">{{ vaga.titulo }}</h1>
@@ -23,11 +24,12 @@
     </div>
 
     <div class="row">
+        # Detalhes da vaga daquela empresa
         <div class="col-lg-6">
             <div class="card shadow mb-4">
                 <div class="card-header bg-primary text-white">
                     <h5 class="card-title mb-0">
-                        <i class="bi bi-info-circle me-2"></i>Detalhes da Vaga
+                        Detalhes da Vaga
                     </h5>
                 </div>
                 <div class="card-body">
@@ -73,11 +75,12 @@
             </div>
         </div>
 
+       # Lista de candidatos
         <div class="col-lg-6">
             <div class="card shadow">
                 <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
-                        <i class="bi bi-people me-2"></i>Candidaturas
+                        Candidaturas
                     </h5>
                     <span class="badge bg-light text-dark">{{ candidaturas.count }}</span>
                 </div>
@@ -90,10 +93,9 @@
                                 <div class="flex-grow-1">
                                     <h6 class="mb-1 fw-bold">{{ candidatura.usuario.get_full_name|default:candidatura.usuario.username }}</h6>
                                     <p class="mb-1 text-muted small">
-                                        <i class="bi bi-envelope me-1"></i>{{ candidatura.usuario.email }}
+                                        Email: {{ candidatura.usuario.email }}
                                     </p>
                                     <small class="text-muted">
-                                        <i class="bi bi-calendar me-1"></i>
                                         Candidatou-se em {{ candidatura.data_candidatura|date:"d/m/Y" }}
                                     </small>
                                 </div>
@@ -103,21 +105,22 @@
                                         {% elif candidatura.status == 'visualizada' %}bg-info
                                         {% elif candidatura.status == 'entrevista' %}bg-primary
                                         {% elif candidatura.status == 'rejeitada' %}bg-danger
-                                        {% else %}bg-success{% endif %} mb-2">
+                                        {% else %}bg-success{% endif %} mb-2 d-block">
                                         {{ candidatura.get_status_display }}
                                     </span>
                                     <br>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="#" class="btn btn-outline-primary" title="Ver perfil">
-                                            <i class="bi bi-eye"></i>
+                                        <a href="{% url 'empresa:ver_perfil_candidato' candidatura.usuario.id %}" 
+                                           class="btn btn-outline-primary">
+                                            Ver Perfil
                                         </a>
                                         <a href="{% url 'empresa:atualizar_status_candidatura' candidatura.id 'entrevista' %}" 
-                                           class="btn btn-outline-success" title="Chamar para entrevista">
-                                            <i class="bi bi-calendar-check"></i>
+                                           class="btn btn-outline-success">
+                                            Entrevista
                                         </a>
                                         <a href="{% url 'empresa:atualizar_status_candidatura' candidatura.id 'rejeitada' %}" 
-                                           class="btn btn-outline-danger" title="Rejeitar candidatura">
-                                            <i class="bi bi-x-lg"></i>
+                                           class="btn btn-outline-danger">
+                                            Rejeitar
                                         </a>
                                     </div>
                                 </div>
@@ -138,6 +141,7 @@
     </div>
 </div>
 
+# Modal de confirmação de exclusão
 <div class="modal fade" id="modalExcluirVaga" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">

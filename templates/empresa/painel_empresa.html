@@ -7,7 +7,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 text-gray-800">Painel da Empresa</h1>
-            <p class="text-muted mb-0">Gerencie suas vagas e candidaturas</p>
+            <p class="text-muted mb-0">Bem-vindo, {{ empresa.nome }}!</p>
         </div>
         <a href="{% url 'vagas:criar_vaga' %}" class="btn btn-primary">
             <i class="bi bi-plus-circle me-2"></i>Nova Vaga
@@ -68,27 +68,10 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Visualizações do Perfil
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">156</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-bar-chart fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="row">
+        <!-- Ações Rápidas -->
         <div class="col-lg-6">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -109,15 +92,9 @@
                             </a>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <a href="#" class="btn btn-outline-info w-100 h-100 py-3">
+                            <a href="{% url 'empresa:perfil_empresa' %}" class="btn btn-outline-info w-100 h-100 py-3">
                                 <i class="bi bi-building display-6 d-block mb-2"></i>
                                 Perfil da Empresa
-                            </a>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <a href="#" class="btn btn-outline-warning w-100 h-100 py-3">
-                                <i class="bi bi-people display-6 d-block mb-2"></i>
-                                Candidatos
                             </a>
                         </div>
                     </div>
@@ -125,32 +102,27 @@
             </div>
         </div>
 
+        <!-- Atividades Recentes (AGORA FUNCIONANDO COM DADOS REAIS) -->
         <div class="col-lg-6">
             <div class="card shadow">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Atividades Recentes</h6>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <small class="text-success">●</small>
-                        <small class="ms-2">Nova candidatura recebida</small>
-                        <div class="text-muted small">Hoje, 14:30</div>
-                    </div>
-                    <div class="mb-3">
-                        <small class="text-info">●</small>
-                        <small class="ms-2">Vaga "Desenvolvedor Python" publicada</small>
-                        <div class="text-muted small">Ontem, 09:15</div>
-                    </div>
-                    <div class="mb-3">
-                        <small class="text-warning">●</small>
-                        <small class="ms-2">Perfil da empresa atualizado</small>
-                        <div class="text-muted small">05/11/2025</div>
-                    </div>
-                    <div class="mb-3">
-                        <small class="text-primary">●</small>
-                        <small class="ms-2">10 visualizações no seu perfil</small>
-                        <div class="text-muted small">04/11/2025</div>
-                    </div>
+                    {% if atividades_recentes %}
+                        {% for atividade in atividades_recentes %}
+                        <div class="mb-3">
+                            <small class="{{ atividade.icone }}">●</small>
+                            <small class="ms-2">{{ atividade.descricao }}</small>
+                            <div class="text-muted small">{{ atividade.data|timesince }} atrás</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Nenhuma atividade recente
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

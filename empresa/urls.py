@@ -15,4 +15,6 @@ urlpatterns = [
     path('vagas/<int:vaga_id>/excluir/', views.excluir_vaga_empresa, name='excluir_vaga'),
     path('candidatura/<int:candidatura_id>/status/<str:novo_status>/',views.atualizar_status_candidatura, name='atualizar_status_candidatura'),
     path("perfil/", views.perfil_empresa, name="perfil_empresa"),
+    path('candidato/<int:candidato_id>/perfil/', views.ver_perfil_candidato, name='ver_perfil_candidato'),
+    path('painel/', views.painel_empresa, name='painel_empresa'),
 ]
