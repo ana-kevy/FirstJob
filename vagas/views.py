@@ -10,27 +10,44 @@ from django import forms
 
 def listar_vagas(request):
     filtro_titulo = request.GET.get("titulo", "")
-    filtro_cidade = request.GET.get("cidade", "")
-    filtro_modalidade = request.GET.get("modalidade", "")  # remoto/presencial
+    filtro_empresa = request.GET.get("empresa", "")
+    filtro_salario_min = request.GET.get("salario_min", "")
     filtro_area = request.GET.get("area", "")
+    filtro_tipo_vaga = request.GET.get("tipo_vaga", "")
+    filtro_tipo_contratacao = request.GET.get("tipo_contratacao", "")
+    filtro_ativo = request.GET.get("ativo", "")
 
-    vagas = Vaga.objects.filter(ativo=True)
+    vagas = Vaga.objects.all()
 
     if filtro_titulo:
         vagas = vagas.filter(titulo__icontains=filtro_titulo)
 
-    if filtro_cidade:
-        vagas = vagas.filter(cidade__icontains=filtro_cidade)
+    if filtro_empresa:
+        vagas = vagas.filter(empresa__nome__icontains=filtro_empresa)
 
-    if filtro_modalidade:
-        vagas = vagas.filter(modalidade__icontains=filtro_modalidade)
+    if filtro_salario_min:
+        try:
+            salario_min = float(filtro_salario_min)
+            vagas = vagas.filter(salario__gte=salario_min)
+        except ValueError:
+            pass
 
-    if filtro_area:
-        vagas = vagas.filter(area__icontains=filtro_area)
+    if filtro_area and filtro_area != "todas":
+        vagas = vagas.filter(area=filtro_area)
+
+    if filtro_tipo_vaga and filtro_tipo_vaga != "todas":
+        vagas = vagas.filter(tipo_vaga=filtro_tipo_vaga)
+
+    if filtro_tipo_contratacao and filtro_tipo_contratacao != "todas":
+        vagas = vagas.filter(tipo_contratacao=filtro_tipo_contratacao)
+
+    if filtro_ativo == "false":
+        vagas = vagas.filter(ativo=False)
+    else:
+        vagas = vagas.filter(ativo=True)
 
     vagas = vagas.order_by("-data_publicacao")
 
-    # paginação
     paginator = Paginator(vagas, 6)
     page = request.GET.get("page")
     vagas_paginadas = paginator.get_page(page)
@@ -38,9 +55,15 @@ def listar_vagas(request):
     contexto = {
         "vagas": vagas_paginadas,
         "filtro_titulo": filtro_titulo,
-        "filtro_cidade": filtro_cidade,
-        "filtro_modalidade": filtro_modalidade,
+        "filtro_empresa": filtro_empresa,
+        "filtro_salario_min": filtro_salario_min,
         "filtro_area": filtro_area,
+        "filtro_tipo_vaga": filtro_tipo_vaga,
+        "filtro_tipo_contratacao": filtro_tipo_contratacao,
+        "filtro_ativo": filtro_ativo,
+        "areas": Vaga.AREA_CHOICES,
+        "tipos_vaga": Vaga.TIPO_VAGA_CHOICES,
+        "tipos_contratacao": Vaga.TIPO_CONTRATACAO_CHOICES,
     }
 
     return render(request, "vagas/listar.html", contexto)

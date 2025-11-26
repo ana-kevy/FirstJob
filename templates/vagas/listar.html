@@ -23,7 +23,7 @@
     }
 
     .badge-ativo {
-        background-color: #007bff; /* Alterado de verde para azul */
+        background-color: #007bff;
     }
 
     .badge-inativo {
@@ -52,7 +52,6 @@
         </div>
     </div>
 
-    <!-- Seção de Filtros -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="filter-section">
@@ -61,45 +60,88 @@
                 </h5>
                 <form method="get">
                     <div class="row g-2 align-items-end">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label for="titulo" class="form-label">Título</label>
                             <input type="text" name="titulo" id="titulo" class="form-control" 
                                    placeholder="Buscar por título" value="{{ filtro_titulo }}">
                         </div>
 
-                        <div class="col-md-3">
-                            <label for="cidade" class="form-label">Cidade</label>
-                            <input type="text" name="cidade" id="cidade" class="form-control" 
-                                   placeholder="Digite a cidade" value="{{ filtro_cidade }}">
+                        <!-- Empresa -->
+                        <div class="col-md-2">
+                            <label for="empresa" class="form-label">Empresa</label>
+                            <input type="text" name="empresa" id="empresa" class="form-control" 
+                                   placeholder="Nome da empresa" value="{{ filtro_empresa }}">
                         </div>
 
-                        <div class="col-md-3">
-                            <label for="area" class="form-label">Área</label>
-                            <input type="text" name="area" id="area" class="form-control" 
-                                   placeholder="Ex: Tecnologia, Vendas..." value="{{ filtro_area }}">
+                        <!-- Salário Mínimo -->
+                        <div class="col-md-2">
+                            <label for="salario_min" class="form-label">Salário Mín.</label>
+                            <input type="number" name="salario_min" id="salario_min" class="form-control" 
+                                   placeholder="R$ 0,00" value="{{ filtro_salario_min }}" step="0.01">
                         </div>
 
                         <div class="col-md-2">
-                            <label for="modalidade" class="form-label">Modalidade</label>
-                            <select name="modalidade" id="modalidade" class="form-select">
-                                <option value="">Todas</option>
-                                <option value="Presencial" {% if filtro_modalidade == 'Presencial' %}selected{% endif %}>Presencial</option>
-                                <option value="Remoto" {% if filtro_modalidade == 'Remoto' %}selected{% endif %}>Remoto</option>
-                                <option value="Híbrido" {% if filtro_modalidade == 'Híbrido' %}selected{% endif %}>Híbrido</option>
+                            <label for="area" class="form-label">Área</label>
+                            <select name="area" id="area" class="form-select">
+                                <option value="todas">Todas as áreas</option>
+                                {% for value, label in areas %}
+                                    <option value="{{ value }}" {% if filtro_area == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
                             </select>
                         </div>
 
-                        <div class="col-md-1">
+                        <div class="col-md-2">
+                            <label for="tipo_vaga" class="form-label">Modalidade</label>
+                            <select name="tipo_vaga" id="tipo_vaga" class="form-select">
+                                <option value="todas">Todas</option>
+                                {% for value, label in tipos_vaga %}
+                                    <option value="{{ value }}" {% if filtro_tipo_vaga == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label for="tipo_contratacao" class="form-label">Contratação</label>
+                            <select name="tipo_contratacao" id="tipo_contratacao" class="form-select">
+                                <option value="todas">Todas</option>
+                                {% for value, label in tipos_contratacao %}
+                                    <option value="{{ value }}" {% if filtro_tipo_contratacao == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        {% if user.is_admin_user %}
+                        <div class="col-md-2">
+                            <label for="ativo" class="form-label">Status</label>
+                            <select name="ativo" id="ativo" class="form-select">
+                                <option value="">Ativas</option>
+                                <option value="false" {% if filtro_ativo == "false" %}selected{% endif %}>Inativas</option>
+                                <option value="all" {% if filtro_ativo == "all" %}selected{% endif %}>Todas</option>
+                            </select>
+                        </div>
+                        {% endif %}
+
+                        <div class="col-md-2">
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="bi bi-funnel"></i> Filtrar
                             </button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-secondary w-100">
+                                <i class="bi bi-arrow-clockwise"></i> Limpar
+                            </a>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <!-- Fim da Seção de Filtros -->
 
     {% if vagas %}
         <div class="row g-4">
@@ -128,21 +170,31 @@
                                 {{ vaga.descricao|truncatewords:20 }}
                             </p>
                             
-                            <div class="mb-3">
+                            <div class="mb-2">
+                                <i class="bi bi-tags text-primary"></i>
+                                <strong>Área:</strong> {{ vaga.get_area_display }}
+                            </div>
+
+                            <div class="mb-2">
                                 <i class="bi bi-clock text-success"></i>
                                 <strong>Carga Horária:</strong> {{ vaga.carga_horaria }}
                             </div>
 
                             {% if vaga.salario %}
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <i class="bi bi-currency-dollar text-success"></i>
                                 <strong>Salário:</strong> R$ {{ vaga.salario }}
                             </div>
                             {% endif %}
                             
+                            <div class="mb-2">
+                                <i class="bi bi-briefcase text-info"></i>
+                                <strong>Modalidade:</strong> {{ vaga.get_tipo_vaga_display }}
+                            </div>
+
                             <div class="mb-3">
-                                <i class="bi bi-briefcase text-success"></i>
-                                <strong>Modalidade:</strong> {{ vaga.modalidade }}
+                                <i class="bi bi-file-earmark-text text-warning"></i>
+                                <strong>Contratação:</strong> {{ vaga.get_tipo_contratacao_display }}
                             </div>
 
                             <div class="d-flex gap-2">
@@ -156,7 +208,6 @@
             {% endfor %}
         </div>
 
-        <!-- Paginação -->
         <div class="row mt-5">
             <div class="col-12">
                 <nav aria-label="Page navigation">

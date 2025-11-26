@@ -19,7 +19,7 @@ def perfil_empresa(request):
     total_vagas = Vaga.objects.filter(empresa=empresa).count()
     vagas_ativas = Vaga.objects.filter(empresa=empresa, ativo=True).count()
     
-    # Candidaturas dos últimos 30 dias - CORREÇÃO: data em vez de data_candidatura
+    # Candidaturas dos últimos 30 dias 
     data_limite = timezone.now() - timedelta(days=30)
     candidaturas_recentes = Candidatura.objects.filter(
         vaga__empresa=empresa, 
@@ -34,7 +34,6 @@ def perfil_empresa(request):
     }
     return render(request, "empresa/perfil_empresa.html", context)
 
-# VIEW: Painel da empresa
 @login_required
 def painel_empresa(request):
     empresa = request.user
@@ -42,11 +41,11 @@ def painel_empresa(request):
     total_vagas = Vaga.objects.filter(empresa=empresa).count()
     vagas_ativas = Vaga.objects.filter(empresa=empresa, ativo=True).count()
     
-    # Candidaturas dos últimos 30 dias - CORREÇÃO: data em vez de data_candidatura
+    # Candidaturas dos últimos 30 dias 
     data_limite = timezone.now() - timedelta(days=30)
     candidaturas_recentes = Candidatura.objects.filter(
         vaga__empresa=empresa, 
-        data__gte=data_limite  # ← CORREÇÃO AQUI
+        data__gte=data_limite  
     ).count()
     
     # Atividades recentes
@@ -66,17 +65,17 @@ def painel_empresa(request):
             'icone': 'text-info'
         })
     
-    # Adicionar candidaturas recentes como atividades - CORREÇÃO: data em vez de data_candidatura
+    # Adicionar candidaturas recentes como atividades 
     candidaturas_novas = Candidatura.objects.filter(
         vaga__empresa=empresa,
-        data__gte=timezone.now() - timedelta(days=7)  # ← CORREÇÃO AQUI
+        data__gte=timezone.now() - timedelta(days=7) 
     ).select_related('vaga')[:5]
     
     for candidatura in candidaturas_novas:
         atividades_recentes.append({
             'tipo': 'nova_candidatura',
             'descricao': f'Nova candidatura para "{candidatura.vaga.titulo}"',
-            'data': candidatura.data,  # ← CORREÇÃO AQUI
+            'data': candidatura.data,
             'icone': 'text-success'
         })
     
@@ -92,21 +91,17 @@ def painel_empresa(request):
     }
     return render(request, "empresa/painel_empresa.html", context)
 
-# Lista de empresas
+
 class EmpresaListView(LoginRequiredMixin, ListView):
     model = Empresa
     template_name = "empresa/listar.html"
     context_object_name = "empresas"
 
-
-# Detalhes de uma empresa
 class EmpresaDetailView(LoginRequiredMixin, DetailView):
     model = Empresa
     template_name = "empresa/detalhe.html"
     context_object_name = "empresa"
 
-
-# Criar nova empresa
 class EmpresaCreateView(LoginRequiredMixin, CreateView):
     model = Empresa
     form_class = EmpresaForm
@@ -129,7 +124,6 @@ class EmpresaCreateView(LoginRequiredMixin, CreateView):
 
 
 def cadastrar_empresa(request):
-    """Cadastro de empresa"""
     if request.method == "POST":
         form = EmpresaForm(request.POST)
         if form.is_valid():
@@ -142,8 +136,6 @@ def cadastrar_empresa(request):
 
     return render(request, "empresa/cadastrar.html", {"form": form})
 
-
-# Editar empresa
 class EmpresaUpdateView(LoginRequiredMixin, UpdateView):
     model = Empresa
     form_class = EmpresaForm
@@ -202,16 +194,14 @@ def excluir_vaga_empresa(request, vaga_id):
 
 @login_required
 def atualizar_status_candidatura(request, candidatura_id, novo_status):
-    """Atualiza o status de uma candidatura"""
     candidatura = get_object_or_404(Candidatura, id=candidatura_id, vaga__empresa=request.user)
     candidatura.status = novo_status
     candidatura.save()
     
     messages.success(request, f'Status atualizado para {candidatura.get_status_display()}')
     return redirect('empresa:detalhar_vaga_empresa', vaga_id=candidatura.vaga.id)
-
-# NOVA VIEW: Ver perfil do candidato - CORREÇÃO: UsuarioAdaptado em vez de Usuario
 @login_required
+
 def ver_perfil_candidato(request, candidato_id):
     candidato = get_object_or_404(UsuarioAdaptado, id=candidato_id)  # ← CORREÇÃO AQUI
     # Verificar se a empresa tem acesso a este candidato (através de candidaturas)
