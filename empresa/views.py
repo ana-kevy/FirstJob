@@ -150,8 +150,10 @@ class EmpresaUpdateView(LoginRequiredMixin, UpdateView):
 # Excluir empresa
 class EmpresaDeleteView(LoginRequiredMixin, DeleteView):
     model = Empresa
-    template_name = "empresa/confirm_delete.html"
-    success_url = reverse_lazy("empresa:listar_empresas")
+    success_url = reverse_lazy("index")
+
+    def get_queryset(self):
+        return Empresa.objects.filter(usuario=self.request.user)
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Empresa excluída com sucesso!")
@@ -203,19 +205,26 @@ def atualizar_status_candidatura(request, candidatura_id, novo_status):
 @login_required
 
 def ver_perfil_candidato(request, candidato_id):
-    candidato = get_object_or_404(UsuarioAdaptado, id=candidato_id)  # ← CORREÇÃO AQUI
-    # Verificar se a empresa tem acesso a este candidato (através de candidaturas)
+    candidato = get_object_or_404(UsuarioAdaptado, id=candidato_id)
+
     candidaturas_empresa = Candidatura.objects.filter(
         usuario=candidato,
-        vaga__empresa=request.user
+        vaga__empresa=request.user 
     ).exists()
     
     if not candidaturas_empresa:
         messages.error(request, "Acesso não autorizado.")
         return redirect('empresa:listar_vagas_empresa')
     
+    candidatura = Candidatura.objects.filter(
+        usuario=candidato,
+        vaga__empresa=request.user
+    ).first()
+    
     context = {
         'candidato': candidato,
-        'empresa': request.user
+        'empresa': request.user, 
+        'vaga_id': candidatura.vaga.id if candidatura else None
     }
-    return render(request, 'empresa/perfil_candidato.html', context)
+    return render(request, 'empresa/ver_perfil_candidato.html', context)
+

@@ -93,13 +93,13 @@
                                         Email: {{ candidatura.usuario.email }}
                                     </p>
                                     <small class="text-muted">
-                                        Candidatou-se em {{ candidatura.data_candidatura|date:"d/m/Y" }}
+                                        Candidatou-se em {{ candidatura.data|date:"d/m/Y" }}
                                     </small>
                                 </div>
                                 <div class="text-end ms-3">
                                     <span class="badge 
                                         {% if candidatura.status == 'pendente' %}bg-warning
-                                        {% elif candidatura.status == 'visualizada' %}bg-info
+                                        {% elif candidatura.status == 'contratado' %}bg-info
                                         {% elif candidatura.status == 'entrevista' %}bg-primary
                                         {% elif candidatura.status == 'rejeitada' %}bg-danger
                                         {% else %}bg-success{% endif %} mb-2 d-block">

@@ -101,7 +101,6 @@
                                 <i class="bi bi-person-badge me-2"></i>Dados de Acesso
                             </h5>
                             
-                            # Campos de usuário
                             <div class="mb-3">
                                 <label for="id_username" class="form-label">Nome de Usuário</label>
                                 <input type="text" name="username" id="id_username" class="form-control" placeholder="Digite o nome de usuário" required>
@@ -126,7 +125,6 @@
                                 <i class="bi bi-building me-2"></i>Dados da Empresa
                             </h5>
                             
-                            # Campos da empresa 
                             <div class="mb-3">
                                 <label for="id_nome" class="form-label">Nome da Empresa</label>
                                 <input type="text" name="nome" id="id_nome" class="form-control" placeholder="Digite o nome da empresa" required>
@@ -152,7 +150,6 @@
                                 <textarea name="descricao" id="id_descricao" class="form-control" placeholder="Descreva sua empresa..." rows="3"></textarea>
                             </div>
 
-                            # Exibir erros do formulário
                             {% if form.errors %}
                                 <div class="alert alert-danger mt-3">
                                     <strong>Erro no formulário:</strong>
@@ -205,7 +202,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Máscara para CNPJ
         document.getElementById('id_cnpj')?.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
             if (value.length <= 14) {
@@ -222,7 +218,6 @@
             }
         });
 
-        // Máscara para telefone
         document.getElementById('id_telefone')?.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
             if (value.length <= 11) {

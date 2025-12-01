@@ -70,3 +70,18 @@ class LoginForm(AuthenticationForm):
         label="Senha",
         widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Senha"}),
     )
+
+
+class EditarCandidatoForm(forms.ModelForm):
+    class Meta:
+        model = UsuarioAdaptado
+        fields = [
+            'first_name', 
+            'last_name', 
+            'email', 
+            'cpf', 
+            'endereco', 
+            'habilidades', 
+            'link_portfolio', 
+            'curriculo'
+        ]

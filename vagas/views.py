@@ -105,7 +105,7 @@ def criar_vaga(request):
             vaga.empresa = request.user  
             vaga.save()
             messages.success(request, "Vaga criada com sucesso!")
-            return redirect("usuarios:painel_empresa")  
+            return redirect("empresa:painel_empresa")  
     else:
         form = VagaForm()
     

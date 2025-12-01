@@ -6,7 +6,6 @@
   <form method="post">
     {% csrf_token %}
     
-    <!-- Campos básicos do form -->
     <div class="mb-3">
       <label class="form-label">Título da Vaga *</label>
       {{ form.titulo }}
@@ -53,7 +52,7 @@
     </div>
 
     <button class="btn btn-success" type="submit">Criar vaga</button>
-    <a href="{% url 'vagas:listar_vagas' %}" class="btn btn-secondary">Voltar</a>
+    <a href="{% url 'empresa:painel_empresa' %}" class="btn btn-secondary">Voltar</a>
   </form>
 </div>
 

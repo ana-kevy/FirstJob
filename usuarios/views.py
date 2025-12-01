@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -9,7 +9,9 @@ from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
 from vagas.models import Vaga, Candidatura
+from empresa.models import Empresa
 from usuarios.models import UsuarioAdaptado
+from .forms import *
 
 @login_required
 def perfil_usuario(request):
@@ -21,8 +23,6 @@ def criar_grupos(request):
     Group.objects.get_or_create(name="USUARIO")
     return HttpResponse("Grupos criados")
 
-
-# CADASTRO 
 def cadastrar_usuario(request):
     if request.method == "POST":
         form = UsuarioAdaptadoForm(request.POST)
@@ -35,7 +35,6 @@ def cadastrar_usuario(request):
         form = UsuarioAdaptadoForm()
 
     return render(request, "usuarios/cadastrar.html", {"form": form})
-
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -56,7 +55,6 @@ def login_view(request):
 
     return render(request, "usuarios/login.html")
 
-
 def redirect_to_painel_correto(user):
     from empresa.models import Empresa
 
@@ -64,19 +62,16 @@ def redirect_to_painel_correto(user):
         return redirect('usuarios:painel_admin')
 
     elif isinstance(user, Empresa):
-        return redirect('usuarios:painel_empresa')
+        return redirect('/empresa/painel/')
     
     else:
         return redirect('usuarios:painel_candidato')
-
 
 def logout_view(request):
     auth_logout(request)
     messages.info(request, "Você saiu do sistema.")
     return redirect("usuarios:login")
 
-
-# PAINÉIS 
 @login_required
 def painel_candidato(request):
     sete_dias_atras = timezone.now() - timedelta(days=7)
@@ -94,6 +89,7 @@ def painel_candidato(request):
     
     # Total de vagas
     total_vagas = Vaga.objects.filter(ativo=True).count()
+    total_empresas = Empresa.objects.count()
 
     vagas_por_area_ordenadas = sorted(vagas_por_area, key=lambda x: x['total'], reverse=True)
 
@@ -103,19 +99,10 @@ def painel_candidato(request):
         'total_vagas': total_vagas,
         'sete_dias_atras': sete_dias_atras,
         'vagas_por_area': vagas_por_area_ordenadas,
+        'total_empresas': total_empresas,
     }
     return render(request, 'usuarios/painel_candidato.html', context)
 
-@login_required
-def painel_empresa(request):
-    context = {
-        'empresa': request.user,
-        'nome_empresa': request.user.nome, 
-        'total_vagas': 0,
-        'vagas_ativas': 0,
-        'candidaturas_recentes': 0,
-    }
-    return render(request, 'empresa/painel_empresa.html', context)
 
 @login_required
 def painel_admin(request):
@@ -132,3 +119,34 @@ def minhas_candidaturas(request):
         'candidaturas': candidaturas,
     }
     return render(request, 'usuarios/candidaturas.html', context)
+
+@login_required
+def excluir_conta(request, usuario_id):
+    usuario = get_object_or_404(UsuarioAdaptado, id=usuario_id)
+    username = usuario.username
+    usuario.delete()
+    
+    messages.success(request, f"Conta {username} excluída com sucesso!")
+    return redirect('index')  
+
+
+@login_required
+def editar_candidato(request, candidato_id=None):
+    if candidato_id:
+        if not request.user.is_admin_user:
+            messages.error(request, "Acesso não autorizado.")
+            return redirect('usuarios:perfil_usuario')
+        candidato = get_object_or_404(UsuarioAdaptado, id=candidato_id)
+    else:
+        candidato = request.user
+
+    if request.method == 'POST':
+        form = EditarCandidatoForm(request.POST, request.FILES, instance=candidato)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Perfil atualizado com sucesso!")
+            return redirect('usuarios:perfil_usuario')
+    else:
+        form = EditarCandidatoForm(instance=candidato)
+    
+    return render(request, 'usuarios/editar_usuario.html', {'form': form})
