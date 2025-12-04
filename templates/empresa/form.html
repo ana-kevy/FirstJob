@@ -1,14 +1,51 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-4">
-    <h2>{% if form.instance.pk %}Editar Empresa{% else %}Cadastrar Empresa{% endif %}</h2>
-
+    <h2>Editar Empresa</h2>
+    
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Salvar</button>
-        <a href="{% url 'empresa:listar_empresas' %}" class="btn btn-secondary">Cancelar</a>
+        
+        {% for campo in form %}
+        <div class="mb-3">
+            <label for="{{ campo.id_for_label }}" class="form-label">
+                {{ campo.label }}
+                {% if campo.field.required %}<span class="text-danger">*</span>{% endif %}
+            </label>
+            {{ campo }}
+            {% if campo.help_text %}
+                <div class="form-text">{{ campo.help_text }}</div>
+            {% endif %}
+            {% if campo.errors %}
+                <div class="text-danger small">{{ campo.errors }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Salvar</button>
+            
+            {% if user.is_superuser or user.is_admin %}
+                <a href="{% url 'empresa:listar_empresas' %}" class="btn btn-secondary">Cancelar</a>
+            {% else %}
+                <a href="{% url 'empresa:perfil_empresa' %}" class="btn btn-secondary">Cancelar</a>
+            {% endif %}
+        </div>
     </form>
 </div>
-{% endblock %}
 
+<style>
+.form-control {
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+.btn {
+    border-radius: 6px;
+    padding: 8px 20px;
+}
+.btn-sm {
+    padding: 6px 12px;
+}
+</style>
+{% endblock %}

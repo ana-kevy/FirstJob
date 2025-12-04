@@ -7,7 +7,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 text-gray-800 mb-0">Perfil do Candidato</h1>
         <div>
-            <a href="{% url 'usuarios:editar_candidato' %}" class="btn btn-primary me-2">
+            <a href="{% url 'usuarios:editar_usuario' %}" class="btn btn-primary me-2">
                 <i class="bi bi-pencil me-2"></i>Editar Perfil
             </a>
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalExcluirConta">
@@ -99,7 +99,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form method="post" action="{% url 'usuarios:excluir_conta' usuario.id %}" style="display: inline;">
+                <form method="post" action="{% url 'usuarios:excluir_usuario' usuario.id %}" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash me-2"></i>Excluir

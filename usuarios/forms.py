@@ -72,16 +72,39 @@ class LoginForm(AuthenticationForm):
     )
 
 
-class EditarCandidatoForm(forms.ModelForm):
+class UsuarioEditarForm(forms.ModelForm):
     class Meta:
         model = UsuarioAdaptado
         fields = [
-            'first_name', 
-            'last_name', 
-            'email', 
-            'cpf', 
-            'endereco', 
-            'habilidades', 
-            'link_portfolio', 
-            'curriculo'
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'cpf',
+            'endereco',
+            'habilidades',
+            'link_portfolio',
+            'curriculo',
         ]
+        
+        labels = {
+            'username': 'Nome de usuário',
+            'email': 'E-mail',
+            'first_name': 'Nome',
+            'last_name': 'Sobrenome',
+            'cpf': 'CPF',
+            'endereco': 'Endereço',
+            'habilidades': 'Habilidades',
+            'link_portfolio': 'Link do portfólio',
+            'curriculo': 'Currículo',
+        }
+        
+        widgets = {
+            'habilidades': forms.Textarea(attrs={'rows': 4}),
+            'endereco': forms.Textarea(attrs={'rows': 2}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for campo in self.fields:
+            self.fields[campo].widget.attrs.update({'class': 'form-control'})

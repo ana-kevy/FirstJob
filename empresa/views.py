@@ -1,57 +1,45 @@
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, render, get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
 from .models import Empresa
-from .forms import EmpresaForm
+from .forms import EmpresaForm, EmpresaEditarForm
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from vagas.models import Vaga, Candidatura
 from usuarios.models import UsuarioAdaptado
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import user_passes_test
+from django.db.models import Q
+
+
 
 @login_required
 def perfil_empresa(request):
     empresa = request.user
-    # Estatísticas para o painel
-    total_vagas = Vaga.objects.filter(empresa=empresa).count()
-    vagas_ativas = Vaga.objects.filter(empresa=empresa, ativo=True).count()
-    
-    # Candidaturas dos últimos 30 dias 
-    data_limite = timezone.now() - timedelta(days=30)
-    candidaturas_recentes = Candidatura.objects.filter(
-        vaga__empresa=empresa, 
-        data__gte=data_limite  # ← CORREÇÃO AQUI
-    ).count()
     
     context = {
         "empresa": empresa,
-        "total_vagas": total_vagas,
-        "vagas_ativas": vagas_ativas,
-        "candidaturas_recentes": candidaturas_recentes,
     }
     return render(request, "empresa/perfil_empresa.html", context)
 
 @login_required
 def painel_empresa(request):
     empresa = request.user
-    # Estatísticas para o painel
     total_vagas = Vaga.objects.filter(empresa=empresa).count()
     vagas_ativas = Vaga.objects.filter(empresa=empresa, ativo=True).count()
     
-    # Candidaturas dos últimos 30 dias 
     data_limite = timezone.now() - timedelta(days=30)
     candidaturas_recentes = Candidatura.objects.filter(
         vaga__empresa=empresa, 
         data__gte=data_limite  
     ).count()
     
-    # Atividades recentes
     atividades_recentes = []
     
-    # Adicionar novas vagas como atividades
     vagas_recentes = Vaga.objects.filter(
         empresa=empresa,
         data_publicacao__gte=timezone.now() - timedelta(days=7)
@@ -65,7 +53,6 @@ def painel_empresa(request):
             'icone': 'text-info'
         })
     
-    # Adicionar candidaturas recentes como atividades 
     candidaturas_novas = Candidatura.objects.filter(
         vaga__empresa=empresa,
         data__gte=timezone.now() - timedelta(days=7) 
@@ -79,7 +66,6 @@ def painel_empresa(request):
             'icone': 'text-success'
         })
     
-    # Ordenar atividades por data (mais recentes primeiro)
     atividades_recentes.sort(key=lambda x: x['data'], reverse=True)
     
     context = {
@@ -87,40 +73,54 @@ def painel_empresa(request):
         "total_vagas": total_vagas,
         "vagas_ativas": vagas_ativas,
         "candidaturas_recentes": candidaturas_recentes,
-        "atividades_recentes": atividades_recentes[:5]  # Últimas 5 atividades
+        "atividades_recentes": atividades_recentes[:5]  
     }
     return render(request, "empresa/painel_empresa.html", context)
 
 
-class EmpresaListView(LoginRequiredMixin, ListView):
-    model = Empresa
-    template_name = "empresa/listar.html"
-    context_object_name = "empresas"
+def is_admin_user(user):
+    return user.is_authenticated and (user.is_superuser or getattr(user, 'is_admin', False))
+
+@user_passes_test(is_admin_user, login_url='/usuarios/login/')
+def listar_empresas(request):
+    empresas = Empresa.objects.all()
+    
+    # filtros
+    search = request.GET.get('search', '')
+    status = request.GET.get('status', '')
+    
+    if search:
+        empresas = empresas.filter(
+            Q(nome__icontains=search) |
+            Q(cnpj__icontains=search) |
+            Q(email__icontains=search) |
+            Q(username__icontains=search)
+        )
+    
+    # ordenação
+    empresas = empresas.order_by('-date_joined')
+    
+    # paginação
+    paginator = Paginator(empresas, 10)  # 10 empresas por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # contar vagas para cada empresa
+    for empresa in page_obj:
+        empresa.total_vagas = Vaga.objects.filter(empresa=empresa).count()
+    
+    context = {
+        'page_obj': page_obj,
+        'search': search,
+        'status': status,
+        'total_empresas': empresas.count(),
+    }
+    return render(request, 'admin/listar_empresas.html', context)
 
 class EmpresaDetailView(LoginRequiredMixin, DetailView):
     model = Empresa
-    template_name = "empresa/detalhe.html"
+    template_name = "admin/detalhar_empresas.html"
     context_object_name = "empresa"
-
-class EmpresaCreateView(LoginRequiredMixin, CreateView):
-    model = Empresa
-    form_class = EmpresaForm
-    template_name = "empresa/form.html"
-    success_url = reverse_lazy("empresa:listar_empresas")
-
-    def dispatch(self, request, *args, **kwargs):
-        # se já existir empresa, não deixa criar outra
-        if hasattr(request.user, "empresa"):
-            messages.warning(request, "Você já possui uma empresa cadastrada.")
-            return redirect("empresa:listar_empresas")
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        empresa = form.save(commit=False)
-        empresa.usuario = self.request.user
-        empresa.save()
-        messages.success(self.request, "Empresa cadastrada com sucesso!")
-        return redirect(self.success_url)
 
 
 def cadastrar_empresa(request):
@@ -136,30 +136,46 @@ def cadastrar_empresa(request):
 
     return render(request, "empresa/cadastrar.html", {"form": form})
 
-class EmpresaUpdateView(LoginRequiredMixin, UpdateView):
-    model = Empresa
-    form_class = EmpresaForm
-    template_name = "empresa/form.html"
-    success_url = reverse_lazy("empresa:listar_empresas")
+def editar_empresa(request, pk):
+    empresa = get_object_or_404(Empresa, id=pk)
+    
+    if request.method == 'POST':
+        form = EmpresaEditarForm(request.POST, instance=empresa)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Empresa atualizada com sucesso!")
+            
+            if request.user == empresa:
+                return redirect('empresa:perfil_empresa')
+            else:
+                return redirect('empresa:listar_empresas')
+    else:
+        form = EmpresaEditarForm(instance=empresa)
+    
+    context = {
+        'form': form,
+        'empresa': empresa,
+    }
+    return render(request, 'empresa/form.html', context)
 
-    def form_valid(self, form):
-        messages.success(self.request, "Empresa atualizada com sucesso!")
-        return super().form_valid(form)
 
+@login_required(login_url='/usuarios/login/')
+def excluir_empresa(request, pk):
+    empresa = get_object_or_404(Empresa, id=pk)
+    
+    if request.user == empresa:
+        from django.contrib.auth import logout
+        logout(request)
+        empresa.delete()
+        messages.success(request, "Sua conta foi excluída com sucesso!")
+        return redirect('home')
+    
+    elif request.user.is_superuser or getattr(request.user, 'is_admin', False):
+        nome = empresa.nome
+        empresa.delete()
+        messages.success(request, f"Empresa '{nome}' excluída com sucesso!")
+        return redirect('empresa:listar_empresas')
 
-# Excluir empresa
-class EmpresaDeleteView(LoginRequiredMixin, DeleteView):
-    model = Empresa
-    success_url = reverse_lazy("index")
-
-    def get_queryset(self):
-        return Empresa.objects.filter(usuario=self.request.user)
-
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, "Empresa excluída com sucesso!")
-        return super().delete(request, *args, **kwargs)
-
-# Listar vagas de uma empresa em especifico
 def listar_vagas_empresa(request):
     vagas = Vaga.objects.filter(empresa=request.user).order_by('-data_publicacao')
     
@@ -202,8 +218,8 @@ def atualizar_status_candidatura(request, candidatura_id, novo_status):
     
     messages.success(request, f'Status atualizado para {candidatura.get_status_display()}')
     return redirect('empresa:detalhar_vaga_empresa', vaga_id=candidatura.vaga.id)
-@login_required
 
+@login_required
 def ver_perfil_candidato(request, candidato_id):
     candidato = get_object_or_404(UsuarioAdaptado, id=candidato_id)
 

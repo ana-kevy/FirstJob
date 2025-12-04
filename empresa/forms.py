@@ -43,3 +43,38 @@ class EmpresaForm(UserCreationForm):
         if cnpj and not cnpj.replace(".", "").replace("/", "").replace("-", "").isdigit():
             raise forms.ValidationError("O CNPJ deve conter apenas números e símbolos válidos.")
         return cnpj
+
+
+class EmpresaEditarForm(forms.ModelForm):
+    class Meta:
+        model = Empresa
+        fields = [
+            'username',
+            'email',
+            'nome',
+            'cnpj',
+            'endereco',
+            'telefone',
+            'descricao',
+        ]
+        
+        labels = {
+            'username': 'Nome de usuário',
+            'email': 'E-mail',
+            'first_name': 'Nome',
+            'last_name': 'Sobrenome',
+            'nome': 'Nome da empresa',
+            'cnpj': 'CNPJ',
+            'endereco': 'Endereço',
+            'telefone': 'Telefone',
+            'descricao': 'Descrição',
+        }
+        
+        widgets = {
+            'descricao': forms.Textarea(attrs={'rows': 4}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({'class': 'form-control'})

@@ -12,6 +12,8 @@ from vagas.models import Vaga, Candidatura
 from empresa.models import Empresa
 from usuarios.models import UsuarioAdaptado
 from .forms import *
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 @login_required
 def perfil_usuario(request):
@@ -62,7 +64,7 @@ def redirect_to_painel_correto(user):
         return redirect('usuarios:painel_admin')
 
     elif isinstance(user, Empresa):
-        return redirect('/empresa/painel/')
+        return redirect('empresa:painel_empresa')
     
     else:
         return redirect('usuarios:painel_candidato')
@@ -80,14 +82,14 @@ def painel_candidato(request):
         data_publicacao__gte=sete_dias_atras
     ).order_by('-data_publicacao')[:6]
     
-    # Vagas por area para estatisticas
+    # vagas por area para estatisticas
     vagas_por_area = Vaga.objects.filter(ativo=True).values(
         'area'
     ).annotate(
         total=Count('id')
     ).order_by('-total')[:5]
     
-    # Total de vagas
+    # total de vagas
     total_vagas = Vaga.objects.filter(ativo=True).count()
     total_empresas = Empresa.objects.count()
 
@@ -103,11 +105,9 @@ def painel_candidato(request):
     }
     return render(request, 'usuarios/painel_candidato.html', context)
 
-
 @login_required
 def painel_admin(request):
     return render(request, 'admin/painel_admin.html')
-
 
 @login_required
 def minhas_candidaturas(request):
@@ -121,32 +121,77 @@ def minhas_candidaturas(request):
     return render(request, 'usuarios/candidaturas.html', context)
 
 @login_required
-def excluir_conta(request, usuario_id):
-    usuario = get_object_or_404(UsuarioAdaptado, id=usuario_id)
+def excluir_conta(request, pk):
+    usuario = get_object_or_404(UsuarioAdaptado, id=pk)
     username = usuario.username
     usuario.delete()
     
     messages.success(request, f"Conta {username} excluída com sucesso!")
-    return redirect('index')  
-
+    return redirect('home')  
 
 @login_required
-def editar_candidato(request, candidato_id=None):
-    if candidato_id:
-        if not request.user.is_admin_user:
-            messages.error(request, "Acesso não autorizado.")
-            return redirect('usuarios:perfil_usuario')
-        candidato = get_object_or_404(UsuarioAdaptado, id=candidato_id)
-    else:
-        candidato = request.user
-
-    if request.method == 'POST':
-        form = EditarCandidatoForm(request.POST, request.FILES, instance=candidato)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Perfil atualizado com sucesso!")
-            return redirect('usuarios:perfil_usuario')
-    else:
-        form = EditarCandidatoForm(instance=candidato)
+def editar_usuario(request, pk):
+    """Edita um usuário"""
+    usuario = get_object_or_404(UsuarioAdaptado, id=pk)
     
-    return render(request, 'usuarios/editar_usuario.html', {'form': form})
+    # Verifica permissão
+    if usuario != request.user and not (request.user.is_superuser or getattr(request.user, 'is_admin', False)):
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('home')
+    
+    if request.method == 'POST':
+        formulario = UsuarioEditarForm(request.POST, request.FILES, instance=usuario)
+        if formulario.is_valid():
+            formulario.save()
+            messages.success(request, "Usuário atualizado com sucesso!")
+            
+            if request.user == usuario:
+                return redirect('usuarios:perfil_usuario')
+            else:
+                return redirect('admin:listar_usuarios')
+    else:
+        formulario = UsuarioEditarForm(instance=usuario)
+    
+    context = {
+        'form': formulario,
+        'usuario': usuario,
+    }
+    return render(request, 'usuarios/editar_usuario.html', context)
+
+@login_required
+def listar_usuarios(request):
+    busca = request.GET.get('busca', '')
+    tipo = request.GET.get('tipo', '')
+    
+    usuarios = UsuarioAdaptado.objects.all()
+    
+    if busca:
+        usuarios = usuarios.filter(
+            Q(username__icontains=busca) |
+            Q(email__icontains=busca) |
+            Q(first_name__icontains=busca) |
+            Q(last_name__icontains=busca) |
+            Q(cpf__icontains=busca)
+        )
+    
+    if tipo == 'candidato':
+        usuarios = usuarios.filter(is_admin=False)
+    elif tipo == 'admin':
+        usuarios = usuarios.filter(is_admin=True)
+    
+    usuarios = usuarios.order_by('-date_joined')
+    
+    # paginação
+    paginador = Paginator(usuarios, 10)
+    pagina_numero = request.GET.get('pagina')
+    objeto_pagina = paginador.get_page(pagina_numero)
+    
+    context = {
+        'objeto_pagina': objeto_pagina,
+        'busca': busca,
+        'tipo': tipo,
+        'total_usuarios': usuarios.count(),
+    }
+    return render(request, 'admin/listar_usuarios.html', context)
+
+

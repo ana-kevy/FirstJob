@@ -54,27 +54,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-lg-4">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h5 class="card-title mb-0">Ações Rápidas</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'vagas:criar_vaga' %}" class="btn btn-primary mb-2">
-                            <i class="bi bi-plus-circle me-2"></i>Nova Vaga
-                        </a>
-                        <a href="{% url 'empresa:listar_vagas_empresa' %}" class="btn btn-outline-primary mb-2">
-                            <i class="bi bi-briefcase me-2"></i>Minhas Vagas
-                        </a>
-                        <a href="{% url 'empresa:painel_empresa' %}" class="btn btn-outline-success">
-                            <i class="bi bi-speedometer2 me-2"></i>Voltar ao Painel
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -97,7 +76,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form method="post" action="{% url 'empresa:excluir_empresa' empresa.id %}" style="display: inline;">
+                <form method="post" action="{% url 'empresa:excluir_empresa' user.id %}" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash me-2"></i>Excluir

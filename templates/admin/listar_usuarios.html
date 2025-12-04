@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Gerenciar Usuários{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gerenciar Usuários</h2>
+        <span class="badge bg-primary">Total: {{ total_usuarios }}</span>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-2">
+                <div class="col-md-8">
+                    <input type="text" name="busca" class="form-control" 
+                           placeholder="Buscar por nome, email ou CPF..." value="{{ busca }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="tipo" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="candidato" {% if tipo == 'candidato' %}selected{% endif %}>Candidatos</option>
+                        <option value="admin" {% if tipo == 'admin' %}selected{% endif %}>Administradores</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuário</th>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>CPF</th>
+                            <th>Tipo</th>
+                            <th>Cadastro</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in objeto_pagina %}
+                        <tr>
+                            <td>{{ usuario.id }}</td>
+                            <td>{{ usuario.username }}</td>
+                            <td>{{ usuario.get_full_name }}</td>
+                            <td>{{ usuario.email }}</td>
+                            <td>{{ usuario.cpf|default:"-" }}</td>
+                            <td>
+                                {% if usuario.is_superuser %}
+                                    <span class="badge bg-danger">Super Admin</span>
+                                {% elif usuario.is_admin %}
+                                    <span class="badge bg-warning">Admin</span>
+                                {% else %}
+                                    <span class="badge bg-primary">Candidato</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ usuario.date_joined|date:"d/m/Y" }}</td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">Detalhar</a>
+                                    <a href="{% url 'usuarios:editar_usuario' usuario.id %}" 
+                                       class="btn btn-sm btn-outline-warning">Editar</a>
+                                    <form method="post" action="{% url 'usuarios:excluir_usuario' usuario.id %}" 
+                                          style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Excluir {{ usuario.username }}?')">
+                                            Excluir
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <h5 class="text-muted">Nenhum usuário encontrado</h5>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if objeto_pagina.has_other_pages %}
+            <div class="mt-4 d-flex justify-content-center">
+                <nav>
+                    <ul class="pagination">
+                        {% if objeto_pagina.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" 
+                               href="?pagina={{ objeto_pagina.previous_page_number }}{% if busca %}&busca={{ busca }}{% endif %}{% if tipo %}&tipo={{ tipo }}{% endif %}">
+                                &laquo;
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">
+                                Página {{ objeto_pagina.number }} de {{ objeto_pagina.paginator.num_pages }}
+                            </span>
+                        </li>
+                        
+                        {% if objeto_pagina.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" 
+                               href="?pagina={{ objeto_pagina.next_page_number }}{% if busca %}&busca={{ busca }}{% endif %}{% if tipo %}&tipo={{ tipo }}{% endif %}">
+                                &raquo;
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

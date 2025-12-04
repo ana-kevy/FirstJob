@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
-
+LOGIN_URL = '/usuarios/login/'
 
 # Application definition
 
@@ -77,6 +77,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
