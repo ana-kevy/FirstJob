@@ -75,16 +75,6 @@ class Vaga(models.Model):
         return self.titulo
 
 
-class Mensagem(models.Model):
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
-    candidato = models.ForeignKey(UsuarioAdaptado, on_delete=models.CASCADE)
-    conteudo = models.TextField()
-    data_envio = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.candidato.username} → {self.empresa.nome}: {self.conteudo[:30]}"
-
-
 class Candidatura(models.Model):
     STATUS_CHOICES = [
         ('pendente', 'Pendente'),

@@ -16,7 +16,7 @@ class UsuarioAdaptado(AbstractUser):
     
     @property
     def is_candidato_user(self):
-        return not self.is_admin  # Se não for admin, é candidato
+        return not self.is_admin 
     
     @property
     def is_admin_user(self):

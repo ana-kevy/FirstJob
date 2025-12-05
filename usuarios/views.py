@@ -135,10 +135,6 @@ def excluir_usuario(request, pk):
     usuario = get_object_or_404(UsuarioAdaptado, id=pk)
     nome_usuario = usuario.username
     
-    if usuario != request.user and not (request.user.is_superuser or getattr(request.user, 'is_admin', False)):
-        messages.error(request, "Acesso não autorizado.")
-        return redirect('usuarios:listar_usuarios')
-    
     if request.user == usuario:
         auth_logout(request)
         usuario.delete()

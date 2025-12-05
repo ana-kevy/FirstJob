@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator
-from .models import Vaga, Mensagem, Candidatura
-from .form import VagaForm, MensagemForm
+from .models import Vaga, Candidatura
+from .form import VagaForm
 from empresa.models import Empresa
 from django import forms
 
@@ -71,23 +71,8 @@ def listar_vagas(request):
 
 def detalhar_vaga(request, vaga_id):
     vaga = get_object_or_404(Vaga, id=vaga_id)
-    mensagens = Mensagem.objects.filter(empresa=vaga.empresa).order_by("-data_envio")
-
-    if request.method == "POST":
-        form = MensagemForm(request.POST)
-        if form.is_valid():
-            mensagem = form.save(commit=False)
-            mensagem.empresa = vaga.empresa
-            mensagem.candidato = request.user
-            mensagem.save()
-            messages.success(request, "Mensagem enviada com sucesso!")
-            return redirect("vagas:detalhar_vaga", vaga_id=vaga.id)
-    else:
-        form = MensagemForm()
-
     return render(
-        request, "vagas/detalhar.html", {"vaga": vaga, "mensagens": mensagens, "form": form}
-    )
+        request, "vagas/detalhar.html", {"vaga": vaga})
 
 
 def grupo_required(nome_grupo):

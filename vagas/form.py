@@ -1,5 +1,5 @@
 from django import forms
-from .models import Vaga, Mensagem
+from .models import Vaga
 
 
 class VagaForm(forms.ModelForm):
@@ -38,13 +38,3 @@ class VagaForm(forms.ModelForm):
             "tipo_contratacao": "Tipo de Contratação",
         }
 
-
-class MensagemForm(forms.ModelForm):
-    class Meta:
-        model = Mensagem
-        fields = ["conteudo"]
-        widgets = {
-            "conteudo": forms.Textarea(
-                attrs={"class": "form-control", "placeholder": "Digite sua mensagem..."}
-            ),
-        }
