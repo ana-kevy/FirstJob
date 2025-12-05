@@ -8,7 +8,6 @@
         <span class="badge bg-primary">Total: {{ total_usuarios }}</span>
     </div>
 
-    <!-- Filtros -->
     <div class="card mb-4">
         <div class="card-body">
             <form method="get" class="row g-2">
@@ -18,9 +17,10 @@
                 </div>
                 <div class="col-md-2">
                     <select name="tipo" class="form-select">
-                        <option value="">Todos</option>
+                        <option value="">Todos os tipos</option>
                         <option value="candidato" {% if tipo == 'candidato' %}selected{% endif %}>Candidatos</option>
                         <option value="admin" {% if tipo == 'admin' %}selected{% endif %}>Administradores</option>
+                        <option value="superadmin" {% if tipo == 'superadmin' %}selected{% endif %}>Super Admins</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -30,7 +30,6 @@
         </div>
     </div>
 
-    <!-- Tabela -->
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
@@ -67,7 +66,7 @@
                             <td>{{ usuario.date_joined|date:"d/m/Y" }}</td>
                             <td>
                                 <div class="d-flex gap-1">
-                                    <a href="#" class="btn btn-sm btn-outline-primary">Detalhar</a>
+                                    <a href="{% url 'usuarios:detalhar_usuario' usuario.id %}" class="btn btn-sm btn-outline-primary">Detalhar</a>
                                     <a href="{% url 'usuarios:editar_usuario' usuario.id %}" 
                                        class="btn btn-sm btn-outline-warning">Editar</a>
                                     <form method="post" action="{% url 'usuarios:excluir_usuario' usuario.id %}" 

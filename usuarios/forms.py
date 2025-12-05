@@ -78,8 +78,6 @@ class UsuarioEditarForm(forms.ModelForm):
         fields = [
             'username',
             'email',
-            'first_name',
-            'last_name',
             'cpf',
             'endereco',
             'habilidades',
@@ -90,8 +88,6 @@ class UsuarioEditarForm(forms.ModelForm):
         labels = {
             'username': 'Nome de usuário',
             'email': 'E-mail',
-            'first_name': 'Nome',
-            'last_name': 'Sobrenome',
             'cpf': 'CPF',
             'endereco': 'Endereço',
             'habilidades': 'Habilidades',

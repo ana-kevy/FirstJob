@@ -85,7 +85,6 @@ def is_admin_user(user):
 def listar_empresas(request):
     empresas = Empresa.objects.all()
     
-    # filtros
     search = request.GET.get('search', '')
     status = request.GET.get('status', '')
     
@@ -185,7 +184,6 @@ def listar_vagas_empresa(request):
     }
     return render(request, 'empresa/listar_vagas_empresa.html', context)
 
-# detalhar vaga com candidatura, separei views de detalhar
 @login_required
 def detalhar_vaga_empresa(request, vaga_id):
     vaga = get_object_or_404(Vaga, id=vaga_id, empresa=request.user)

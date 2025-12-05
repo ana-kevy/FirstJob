@@ -22,7 +22,7 @@ class UsuarioAdaptadoAdmin(UserAdmin):
                     "endereco",
                     "curriculo",
                     "habilidades",
-                    "linkportfolio",
+                    "link_portfolio",
                     "is_admin",
                 ),
             },

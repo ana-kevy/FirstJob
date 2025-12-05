@@ -2,10 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import UsuarioAdaptadoForm
 from django.contrib.auth.models import Group
 from django.http import HttpResponse
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import timedelta
 from vagas.models import Vaga, Candidatura
@@ -13,7 +12,7 @@ from empresa.models import Empresa
 from usuarios.models import UsuarioAdaptado
 from .forms import *
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.views.generic import DetailView
 
 @login_required
 def perfil_usuario(request):
@@ -107,7 +106,19 @@ def painel_candidato(request):
 
 @login_required
 def painel_admin(request):
-    return render(request, 'admin/painel_admin.html')
+    total_usuarios = UsuarioAdaptado.objects.count()
+    total_empresas = Empresa.objects.count()
+    vagas_ativas = Vaga.objects.filter(ativo=True).count()
+    total_candidaturas = Candidatura.objects.count()
+    
+    context = {
+        'total_usuarios': total_usuarios,
+        'total_empresas': total_empresas,
+        'vagas_ativas': vagas_ativas,
+        'total_candidaturas': total_candidaturas,
+    }
+    
+    return render(request, 'admin/painel_admin.html', context)
 
 @login_required
 def minhas_candidaturas(request):
@@ -120,24 +131,28 @@ def minhas_candidaturas(request):
     }
     return render(request, 'usuarios/candidaturas.html', context)
 
-@login_required
-def excluir_conta(request, pk):
+def excluir_usuario(request, pk):
     usuario = get_object_or_404(UsuarioAdaptado, id=pk)
-    username = usuario.username
-    usuario.delete()
+    nome_usuario = usuario.username
     
-    messages.success(request, f"Conta {username} excluída com sucesso!")
-    return redirect('home')  
+    if usuario != request.user and not (request.user.is_superuser or getattr(request.user, 'is_admin', False)):
+        messages.error(request, "Acesso não autorizado.")
+        return redirect('usuarios:listar_usuarios')
+    
+    if request.user == usuario:
+        auth_logout(request)
+        usuario.delete()
+        messages.success(request, "Sua conta foi excluída com sucesso!")
+        return redirect('home')  
+    
+    else:
+        usuario.delete()
+        messages.success(request, f"Usuário '{nome_usuario}' excluído com sucesso!")
+        return redirect('usuarios:listar_usuarios') 
 
 @login_required
 def editar_usuario(request, pk):
-    """Edita um usuário"""
     usuario = get_object_or_404(UsuarioAdaptado, id=pk)
-    
-    # Verifica permissão
-    if usuario != request.user and not (request.user.is_superuser or getattr(request.user, 'is_admin', False)):
-        messages.error(request, "Acesso não autorizado.")
-        return redirect('home')
     
     if request.method == 'POST':
         formulario = UsuarioEditarForm(request.POST, request.FILES, instance=usuario)
@@ -175,13 +190,15 @@ def listar_usuarios(request):
         )
     
     if tipo == 'candidato':
-        usuarios = usuarios.filter(is_admin=False)
+        usuarios = usuarios.filter(is_admin=False, is_superuser=False)
     elif tipo == 'admin':
-        usuarios = usuarios.filter(is_admin=True)
+        usuarios = usuarios.filter(is_admin=True, is_superuser=False)
+    elif tipo == 'superadmin':
+        usuarios = usuarios.filter(is_superuser=True)
     
     usuarios = usuarios.order_by('-date_joined')
     
-    # paginação
+    # Paginação
     paginador = Paginator(usuarios, 10)
     pagina_numero = request.GET.get('pagina')
     objeto_pagina = paginador.get_page(pagina_numero)
@@ -193,5 +210,11 @@ def listar_usuarios(request):
         'total_usuarios': usuarios.count(),
     }
     return render(request, 'admin/listar_usuarios.html', context)
+
+class UsuarioDetailView(DetailView):
+    model = UsuarioAdaptado
+    template_name = 'admin/detalhar_usuarios.html'
+    context_object_name = 'usuario'
+
 
 
